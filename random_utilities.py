@@ -1,3 +1,6 @@
+from xml.dom import minicompat
+
+
 def print_matrix(matrix):
     """
     displays the 2D matrix in an easier to read format
@@ -39,7 +42,7 @@ def get_min_row(matrix, already_racing=[]):
         for racer in already_racing:
             temp_col_total = temp_col_total + matrix[racer][i]
             
-        if temp_col_total < min_value:
+        if (min_index != -1 and temp_col_total == min_value and matrix[i][i] < matrix[min_index][min_index]) or temp_col_total < min_value:
             min_index = i
             min_value = temp_col_total
     
@@ -73,3 +76,10 @@ def add_racers_to_matrix(r1,r2,r3,r4,matrix):
     matrix[r4][r2] = matrix[r4][r2]+1
     matrix[r3][r4] = matrix[r3][r4]+1
     matrix[r4][r3] = matrix[r4][r3]+1
+    
+    
+def is_diagonal_equal(matrix):
+    for i in range(len(matrix)):
+        if matrix[i][i] != matrix[0][0]:
+            return False
+    return True

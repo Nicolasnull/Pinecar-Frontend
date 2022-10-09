@@ -1,6 +1,6 @@
 from numpy import matrix
 from random_utilities import *
-def create_schedule(number_of_racers,minimum_number_races_per_racer):
+def create_schedule(number_of_racers,minimum_number_races):
     """
     This takes a number of total racers and returns a 2D array of 
     nX4 for the race
@@ -22,11 +22,8 @@ def create_schedule(number_of_racers,minimum_number_races_per_racer):
             temp_arr.append(0)
         racer_matrix.append(temp_arr)
     
-    while(True):
+    while(len(schedule) < minimum_number_races):
         r1 = get_min_diagonal(racer_matrix)
-        if racer_matrix[r1][r1] > minimum_number_races_per_racer:
-            break
-            
         r2 = get_min_row(racer_matrix, [r1])
         r3 = get_min_row(racer_matrix, [r1,r2])
         r4 = get_min_row(racer_matrix, [r1,r2,r3])
@@ -34,15 +31,27 @@ def create_schedule(number_of_racers,minimum_number_races_per_racer):
         add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
         schedule.append([r1,r2,r3,r4])
         
-        print("---CURRENT SCHEDULE---")
-        print_matrix(schedule)
-        print("---RACER MATRIX---")
-        print_matrix(racer_matrix)
-        print("---Total Races---")
-        print(len(schedule))
-        # if input("quit? >").lower()=="y":
-        #     break
+    print("---RACER MATRIX---")
+    print_matrix(racer_matrix)
+    print("---Total Races---")
+    print(len(schedule))
+        
+    while(not is_diagonal_equal(racer_matrix)):
+        r1 = get_min_diagonal(racer_matrix)
+        r2 = get_min_diagonal(racer_matrix,[r1])
+        r3 = get_min_diagonal(racer_matrix,[r1,r2])
+        r4 = get_min_diagonal(racer_matrix,[r1,r2,r3])
+        add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
+        schedule.append([r1,r2,r3,r4])
+        
+        
+    # print("---CURRENT SCHEDULE---")
+    # print_matrix(schedule)
+    print("---RACER MATRIX---")
+    print_matrix(racer_matrix)
+    print("---Total Races---")
+    print(len(schedule))
         
     
 if __name__=="__main__":
-    create_schedule(25,15)
+    create_schedule(21,60)
