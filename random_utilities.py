@@ -32,6 +32,26 @@ def get_min_diagonal(matrix,skip_index=[]):
     return min_index
 
 
+def get_max_diagonal(matrix,skip_index=[]):
+    """
+    gets the max index of the diagonal of a matrix (diagonals representing the total number of times that racer has raced thus far)
+    
+    Parameters:
+        matrix: (2D int array) matrix to get min diagonal
+        skip_index: (OPTIONAL) (1D int array) indexes to skip 
+        
+    Returns:
+        index of the max excluding the skipped indexes
+    """
+    max_index = -1
+    for i in range(len(matrix)):
+        if i not in skip_index:
+            if max_index == -1 or matrix[i][i] > matrix[max_index][max_index]:
+                max_index=i
+            
+    return max_index
+
+
 def get_min_row(matrix, already_racing=[]):
     min_index = -1
     min_value = 999
@@ -83,3 +103,22 @@ def is_diagonal_equal(matrix):
         if matrix[i][i] != matrix[0][0]:
             return False
     return True
+
+
+def get_all_min_on_diagonal(matrix):
+    min_index = get_min_diagonal(matrix)
+    min_indexes = []
+    for i in range(len(matrix)):
+        if matrix[i][i] == matrix[min_index][min_index]:
+            min_indexes.append(i)
+            
+    return min_indexes
+
+def get_all_max_on_diagonal(matrix):
+    max_index = get_max_diagonal(matrix)
+    max_indexes = []
+    for i in range(len(matrix)):
+        if matrix[i][i] == matrix[max_index][max_index]:
+            max_indexes.append(i)
+            
+    return max_indexes
