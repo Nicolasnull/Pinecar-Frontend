@@ -29,9 +29,33 @@ def get_min_diagonal(matrix,skip_index=[]):
     return min_index
 
 
+def get_min_row(matrix, already_racing=[]):
+    min_index = -1
+    min_value = 999
+    for i in range(len(matrix)):
+        if i in already_racing:
+            continue
+        temp_col_total=0
+        for racer in already_racing:
+            temp_col_total = temp_col_total + matrix[racer][i]
+            
+        if temp_col_total < min_value:
+            min_index = i
+            min_value = temp_col_total
+    
+    return min_index
+
+
 def add_racers_to_matrix(r1,r2,r3,r4,matrix):
     """
-    Adds the racers to the matrix
+    Adds the racers to the matrix based on the match ups they face
+    
+    Parameters:
+        r1: index of racer 1
+        r2: index of racer 2
+        r3: index of racer 3
+        r4: index of racer 4
+        matrix: 2D matrix of match ups 
     """
     matrix[r1][r1] = matrix[r1][r1]+1
     matrix[r2][r2] = matrix[r2][r2]+1

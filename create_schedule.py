@@ -1,3 +1,4 @@
+from numpy import matrix
 from random_utilities import *
 def create_schedule(number_of_racers,minimum_number_races_per_racer):
     """
@@ -23,9 +24,12 @@ def create_schedule(number_of_racers,minimum_number_races_per_racer):
     
     while(True):
         r1 = get_min_diagonal(racer_matrix)
-        r2 = get_min_diagonal(racer_matrix,[r1])
-        r3 = get_min_diagonal(racer_matrix,[r1,r2])
-        r4 = get_min_diagonal(racer_matrix, [r1,r2,r3])
+        if racer_matrix[r1][r1] > minimum_number_races_per_racer:
+            break
+            
+        r2 = get_min_row(racer_matrix, [r1])
+        r3 = get_min_row(racer_matrix, [r1,r2])
+        r4 = get_min_row(racer_matrix, [r1,r2,r3])
         
         add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
         schedule.append([r1,r2,r3,r4])
@@ -34,9 +38,11 @@ def create_schedule(number_of_racers,minimum_number_races_per_racer):
         print_matrix(schedule)
         print("---RACER MATRIX---")
         print_matrix(racer_matrix)
-        if input("quit? >").lower()=="y":
-            break
+        print("---Total Races---")
+        print(len(schedule))
+        # if input("quit? >").lower()=="y":
+        #     break
         
     
 if __name__=="__main__":
-    create_schedule(8,4)
+    create_schedule(25,15)
