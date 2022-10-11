@@ -77,26 +77,65 @@ def add_racers_to_matrix(r1,r2,r3,r4,matrix):
         r1: index of racer 1
         r2: index of racer 2
         r3: index of racer 3
+        r4: index of racer 4, if -1 then do 3 racer addition
+        matrix: 2D matrix of match ups 
+    """
+    if r4 != -1:
+        matrix[r1][r1] = matrix[r1][r1]+1
+        matrix[r2][r2] = matrix[r2][r2]+1
+        matrix[r3][r3] = matrix[r3][r3]+1
+        matrix[r4][r4] = matrix[r4][r4]+1
+        matrix[r1][r2] = matrix[r1][r2]+1
+        matrix[r2][r1] = matrix[r2][r1]+1
+        matrix[r1][r3] = matrix[r1][r3]+1
+        matrix[r3][r1] = matrix[r3][r1]+1
+        matrix[r1][r4] = matrix[r1][r4]+1
+        matrix[r4][r1] = matrix[r4][r1]+1
+        matrix[r2][r3] = matrix[r2][r3]+1
+        matrix[r3][r2] = matrix[r3][r2]+1
+        matrix[r2][r4] = matrix[r2][r4]+1
+        matrix[r4][r2] = matrix[r4][r2]+1
+        matrix[r3][r4] = matrix[r3][r4]+1
+        matrix[r4][r3] = matrix[r4][r3]+1
+    else:
+        matrix[r1][r1] = matrix[r1][r1]+1
+        matrix[r2][r2] = matrix[r2][r2]+1
+        matrix[r3][r3] = matrix[r3][r3]+1
+        matrix[r1][r2] = matrix[r1][r2]+1
+        matrix[r2][r1] = matrix[r2][r1]+1
+        matrix[r1][r3] = matrix[r1][r3]+1
+        matrix[r3][r1] = matrix[r3][r1]+1
+        matrix[r2][r3] = matrix[r2][r3]+1
+        matrix[r3][r2] = matrix[r3][r2]+1
+    
+    
+def remove_racers_from_matrix(r1,r2,r3,r4,matrix):
+    """
+    Removes the racers from the matrix based on the match ups they face
+    
+    Parameters:
+        r1: index of racer 1
+        r2: index of racer 2
+        r3: index of racer 3
         r4: index of racer 4
         matrix: 2D matrix of match ups 
     """
-    matrix[r1][r1] = matrix[r1][r1]+1
-    matrix[r2][r2] = matrix[r2][r2]+1
-    matrix[r3][r3] = matrix[r3][r3]+1
-    matrix[r4][r4] = matrix[r4][r4]+1
-    matrix[r1][r2] = matrix[r1][r2]+1
-    matrix[r2][r1] = matrix[r2][r1]+1
-    matrix[r1][r3] = matrix[r1][r3]+1
-    matrix[r3][r1] = matrix[r3][r1]+1
-    matrix[r1][r4] = matrix[r1][r4]+1
-    matrix[r4][r1] = matrix[r4][r1]+1
-    matrix[r2][r3] = matrix[r2][r3]+1
-    matrix[r3][r2] = matrix[r3][r2]+1
-    matrix[r2][r4] = matrix[r2][r4]+1
-    matrix[r4][r2] = matrix[r4][r2]+1
-    matrix[r3][r4] = matrix[r3][r4]+1
-    matrix[r4][r3] = matrix[r4][r3]+1
-    
+    matrix[r1][r1] = matrix[r1][r1]-1
+    matrix[r2][r2] = matrix[r2][r2]-1
+    matrix[r3][r3] = matrix[r3][r3]-1
+    matrix[r4][r4] = matrix[r4][r4]-1
+    matrix[r1][r2] = matrix[r1][r2]-1
+    matrix[r2][r1] = matrix[r2][r1]-1
+    matrix[r1][r3] = matrix[r1][r3]-1
+    matrix[r3][r1] = matrix[r3][r1]-1
+    matrix[r1][r4] = matrix[r1][r4]-1
+    matrix[r4][r1] = matrix[r4][r1]-1
+    matrix[r2][r3] = matrix[r2][r3]-1
+    matrix[r3][r2] = matrix[r3][r2]-1
+    matrix[r2][r4] = matrix[r2][r4]-1
+    matrix[r4][r2] = matrix[r4][r2]-1
+    matrix[r3][r4] = matrix[r3][r4]-1
+    matrix[r4][r3] = matrix[r4][r3]-1  
     
 def is_diagonal_equal(matrix):
     for i in range(len(matrix)):
@@ -122,3 +161,50 @@ def get_all_max_on_diagonal(matrix):
             max_indexes.append(i)
             
     return max_indexes
+
+
+def steal_from_previous_race(matrix, schedule, last_race):
+    if len(last_race) == 1:
+        # steal from last 2
+        remove_racers_from_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],schedule[-2][3],matrix)
+        remove_racers_from_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],schedule[-1][3],matrix)
+        
+        temp_stolen = schedule[-2].pop()
+        
+        while(temp_stolen in last_race):
+            schedule[-2].insert(0,temp_stolen)
+            temp_stolen = schedule[-2].pop()
+        
+        last_race.append(temp_stolen)
+        
+        temp_stolen = schedule[-1].pop()
+        
+        while(temp_stolen in last_race):
+            schedule[-1].insert(0,temp_stolen)
+            temp_stolen = schedule[-1].pop()
+        
+        last_race.append(temp_stolen)
+        schedule.append(last_race)
+        
+        add_racers_to_matrix(schedule[-3][0],schedule[-3][1],schedule[-3][2],-1,matrix)
+        add_racers_to_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],-1,matrix)
+        add_racers_to_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],-1,matrix)
+        
+    elif len(last_race) == 2:
+        #steal from 1
+        remove_racers_from_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],schedule[-1][3],matrix)
+        temp_stolen = schedule[-1].pop()
+        
+        while(temp_stolen in last_race):
+            schedule[-1].insert(0,temp_stolen)
+            temp_stolen = schedule[-1].pop()
+        
+        last_race.append(temp_stolen)
+        schedule.append(last_race)
+        
+        add_racers_to_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],-1,matrix)
+        add_racers_to_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],-1,matrix)
+    
+        
+if __name__ == "__main__":
+    steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])

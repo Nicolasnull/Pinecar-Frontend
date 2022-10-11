@@ -47,22 +47,22 @@ def create_schedule(number_of_racers,minimum_number_races):
     
     while(True):
         racers_with_full_schedule = get_all_max_on_diagonal(racer_matrix)
+        if len(racers_with_full_schedule) == len(racer_matrix):
+            break
         r1 = get_min_diagonal(racer_matrix,racers_with_full_schedule)
         racers_with_full_schedule.append(r1)
         if len(racers_with_full_schedule) == len(racer_matrix):
-            # TODO: Steal from previous 2 races (3 total races with 3 cars)
-            # TODO: add to matrix and schedule
+            steal_from_previous_race(racer_matrix,schedule,[r1])
             break
         r2 = get_min_row(racer_matrix, racers_with_full_schedule)
         racers_with_full_schedule.append(r2)
         if len(racers_with_full_schedule) == len(racer_matrix):
-            # TODO: Steal from previous 1 race (2 total 3 car races)
-            # TODO: add to matrix and schedule
+            steal_from_previous_race(racer_matrix,schedule,[r1,r2])
             break
         r3 = get_min_row(racer_matrix, racers_with_full_schedule)
         racers_with_full_schedule.append(r3)
         if len(racers_with_full_schedule) == len(racer_matrix):
-            # TODO: add to matrix and schedule
+            add_racers_to_matrix(r1,r2,r3,-1,racer_matrix)
             break
         r4 = get_min_row(racer_matrix, racers_with_full_schedule)
         racers_with_full_schedule.append(r4)
@@ -76,8 +76,8 @@ def create_schedule(number_of_racers,minimum_number_races):
         
         
         
-    # print("---CURRENT SCHEDULE---")
-    # print_matrix(schedule)
+    print("---CURRENT SCHEDULE---")
+    print_matrix(schedule)
     print("---RACER MATRIX---")
     print_matrix(racer_matrix)
     print("---Total Races---")
@@ -85,4 +85,4 @@ def create_schedule(number_of_racers,minimum_number_races):
         
     
 if __name__=="__main__":
-    create_schedule(23,60)
+    create_schedule(6,10)
