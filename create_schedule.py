@@ -1,4 +1,3 @@
-from numpy import matrix
 from random_utilities import *
 def create_schedule(number_of_racers,minimum_number_races):
     """
@@ -10,15 +9,16 @@ def create_schedule(number_of_racers,minimum_number_races):
         minimum_number_races_per_racer: (int) the lowest desired total number of races for each racer
     
     Returns:
-        2D array representing the generated schedule
+        schedule: 2D array representing the generated schedule
+        matrix: 2D array representing how many times each racer faced each other    
     """
     schedule = []
     racer_matrix = []
     
     # fill in empty matrix
-    for i in range(number_of_racers):
+    for _ in range(number_of_racers):
         temp_arr = []
-        for j in range(number_of_racers):
+        for _ in range(number_of_racers):
             temp_arr.append(0)
         racer_matrix.append(temp_arr)
     
@@ -30,19 +30,6 @@ def create_schedule(number_of_racers,minimum_number_races):
         
         add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
         schedule.append([r1,r2,r3,r4])
-        
-    print("---RACER MATRIX---")
-    print_matrix(racer_matrix)
-    print("---Total Races---")
-    print(len(schedule))
-        
-    # while(not is_diagonal_equal(racer_matrix)):
-    #     r1 = get_min_diagonal(racer_matrix)
-    #     r2 = get_min_diagonal(racer_matrix,[r1])
-    #     r3 = get_min_diagonal(racer_matrix,[r1,r2])
-    #     r4 = get_min_diagonal(racer_matrix,[r1,r2,r3])
-    #     add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
-    #     schedule.append([r1,r2,r3,r4])
     
     
     while(True):
@@ -75,14 +62,11 @@ def create_schedule(number_of_racers,minimum_number_races):
         add_racers_to_matrix(r1,r2,r3,r4,racer_matrix)
         
         
-        
-    print("---CURRENT SCHEDULE---")
-    print_matrix(schedule)
-    print("---RACER MATRIX---")
-    print_matrix(racer_matrix)
-    print("---Total Races---")
-    print(len(schedule))
+    return schedule, racer_matrix 
+
         
     
 if __name__=="__main__":
-    create_schedule(6,10)
+    schedule, matrix = create_schedule(25,60)
+    print(get_stats_from_matrix(matrix))
+    

@@ -204,7 +204,29 @@ def steal_from_previous_race(matrix, schedule, last_race):
         
         add_racers_to_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],-1,matrix)
         add_racers_to_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],-1,matrix)
+        
+        
+def get_stats_from_matrix(matrix):
+    num_race_per_car = matrix[0][0]
+    max_num_matchup = -1
+    min_num_matchup = 999
     
+    matrix_dimensions = len(matrix)
+    for i in range(matrix_dimensions):
+        for j in range(i+1,matrix_dimensions):
+            if matrix[i][j] > max_num_matchup:
+                max_num_matchup = matrix[i][j]
+            if matrix[i][j] < min_num_matchup:
+                min_num_matchup = matrix[i][j]
+    
+    total_num_matchup_list = [0] * (max_num_matchup+1)
+    for i in range(matrix_dimensions):
+        for j in range(i+1,matrix_dimensions):
+            total_num_matchup_list[matrix[i][j]] = total_num_matchup_list[matrix[i][j]] + 1
+    
+    
+    
+    return num_race_per_car, max_num_matchup, min_num_matchup, total_num_matchup_list
         
 if __name__ == "__main__":
     steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])

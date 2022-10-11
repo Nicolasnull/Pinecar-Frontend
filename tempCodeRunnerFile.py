@@ -1,0 +1,1 @@
+total_num_matchup_list[matrix[i][j]] = total_num_matchup_list[matrix[i][j]] + 1
