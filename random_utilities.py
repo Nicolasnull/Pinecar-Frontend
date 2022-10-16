@@ -1,3 +1,4 @@
+from operator import indexOf
 from xml.dom import minicompat
 
 
@@ -227,6 +228,30 @@ def get_stats_from_matrix(matrix):
     
     
     return num_race_per_car, max_num_matchup, min_num_matchup, total_num_matchup_list
-        
+   
+   
+def possible_swap(schedule, lane_matrix, racer_index, ideal_min):
+    for race_index,race in enumerate(schedule):
+        if racer_index in race and lane_matrix[racer_index][race.index(racer_index)] > ideal_min:
+            for racer_lane,racer in enumerate(race):
+                if racer == racer_index or lane_matrix[racer_index][racer_lane] >= ideal_min:
+                    continue
+                if lane_matrix[racer][racer_lane] > ideal_min:
+                    return race_index, race.index(racer_index), racer_lane        
+    return -1, -1, -1
+            
+
+def racer_swap(schedule, lane_matrix, race_index, car1_index, car2_index):
+    car1 = schedule[race_index][car1_index]
+    car2 = schedule[race_index][car2_index]
+    
+    lane_matrix[car1][car1_index] = lane_matrix[car1][car1_index] - 1
+    lane_matrix[car1][car2_index] = lane_matrix[car1][car2_index] + 1
+    lane_matrix[car2][car1_index] = lane_matrix[car2][car1_index] + 1
+    lane_matrix[car2][car2_index] = lane_matrix[car2][car2_index] - 1
+    
+    schedule[race_index][car1_index] = car2
+    schedule[race_index][car2_index] = car1
+    
 if __name__ == "__main__":
     steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])

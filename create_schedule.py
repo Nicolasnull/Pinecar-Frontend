@@ -1,3 +1,4 @@
+from math import ceil
 from random_utilities import *
 def create_schedule(number_of_racers,minimum_number_races):
     """
@@ -65,8 +66,37 @@ def create_schedule(number_of_racers,minimum_number_races):
     return schedule, racer_matrix 
 
         
+def equalize_racing_lanes(schedule,matrix):
+    lane_matrix = [[0 for _ in range(len(schedule[0]))] for _ in range(len(matrix))]
+    for race in schedule:
+        for i in range(len(race)):
+            lane_matrix[race[i]][i] = lane_matrix[race[i]][i] + 1
     
+    ideal_min = matrix[0][0] // len(schedule[0])
+          
+    change_made = True  
+    while(change_made):
+        change_made = False
+        for i,racer in enumerate(lane_matrix):
+            max_lane = max(racer)
+            min_lane = min(racer)
+            while(max_lane - min_lane > 1):
+                race_index, index1, index2 = possible_swap(schedule, lane_matrix, i, ideal_min)
+                if race_index > -1:
+                    racer_swap(schedule, lane_matrix, race_index, index1, index2)
+                    change_made = True
+                else:
+                    break
+                max_lane = max(racer)
+                min_lane = min(racer)
+            
+    print_matrix(lane_matrix)
+        
+        
+        
+  
 if __name__=="__main__":
-    schedule, matrix = create_schedule(25,60)
+    schedule, matrix = create_schedule(23,40)
     print(get_stats_from_matrix(matrix))
+    equalize_racing_lanes(schedule,matrix)
     
