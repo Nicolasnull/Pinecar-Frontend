@@ -230,16 +230,25 @@ def get_stats_from_matrix(matrix):
     return num_race_per_car, max_num_matchup, min_num_matchup, total_num_matchup_list
    
    
-def possible_swap(schedule, lane_matrix, racer_index, ideal_min):
-    for race_index,race in enumerate(schedule):
-        if racer_index in race and lane_matrix[racer_index][race.index(racer_index)] > ideal_min:
-            for racer_lane,racer in enumerate(race):
-                if racer == racer_index or lane_matrix[racer_index][racer_lane] >= ideal_min:
-                    continue
-                if lane_matrix[racer][racer_lane] > ideal_min:
-                    return race_index, race.index(racer_index), racer_lane        
-    return -1, -1, -1
+def possible_swap(lane_matrix, race_arr, current_racer, target):
+    current_racer_index = race_arr.index(current_racer)
+    best_heuristic = 0
+    lane1 = -1
+    lane2 = -1
+    for racer_index, racer in enumerate(race_arr):
+        if racer is current_racer:
+            continue
+        temp_heuristic = calculate_heuristic(lane_matrix, current_racer, current_racer_index, racer, racer_index, target)
+        if temp_heuristic > best_heuristic:
+            best_heuristic = temp_heuristic
+            lane1 = racer_index
+            lane2 = current_racer_index
+    return best_heuristic, lane1, lane2
             
+def calculate_heuristic(lane_matrix, car1_index, car1_lane, car2_index, car2_lane, target):
+    current_state = (lane_matrix[car1_index][car1_lane] - target)**2 + (lane_matrix[car1_index][car2_lane] - target)**2 + (lane_matrix[car2_index][car2_lane] - target)**2 + (lane_matrix[car2_index][car1_lane] - target)**2
+    new_state = (lane_matrix[car1_index][car1_lane] - target - 1)**2 + (lane_matrix[car1_index][car2_lane] - target + 1)**2 + (lane_matrix[car2_index][car2_lane] - target - 1)**2 + (lane_matrix[car2_index][car1_lane] - target + 1)**2
+    return current_state - new_state
 
 def racer_swap(schedule, lane_matrix, race_index, car1_index, car2_index):
     car1 = schedule[race_index][car1_index]

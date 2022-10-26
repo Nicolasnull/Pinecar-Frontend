@@ -1,4 +1,6 @@
+import csv
 from math import ceil
+import sys
 from random_utilities import *
 def create_schedule(number_of_racers,minimum_number_races):
     """
@@ -51,6 +53,7 @@ def create_schedule(number_of_racers,minimum_number_races):
         racers_with_full_schedule.append(r3)
         if len(racers_with_full_schedule) == len(racer_matrix):
             add_racers_to_matrix(r1,r2,r3,-1,racer_matrix)
+            schedule.append([r1,r2,r3])
             break
         r4 = get_min_row(racer_matrix, racers_with_full_schedule)
         racers_with_full_schedule.append(r4)
@@ -72,31 +75,44 @@ def equalize_racing_lanes(schedule,matrix):
         for i in range(len(race)):
             lane_matrix[race[i]][i] = lane_matrix[race[i]][i] + 1
     
-    ideal_min = matrix[0][0] // len(schedule[0])
+    target_appearances_per_lane = matrix[0][0] // len(schedule[0])
           
     change_made = True  
     while(change_made):
         change_made = False
-        for i,racer in enumerate(lane_matrix):
-            max_lane = max(racer)
-            min_lane = min(racer)
-            while(max_lane - min_lane > 1):
-                race_index, index1, index2 = possible_swap(schedule, lane_matrix, i, ideal_min)
-                if race_index > -1:
-                    racer_swap(schedule, lane_matrix, race_index, index1, index2)
-                    change_made = True
-                else:
-                    break
-                max_lane = max(racer)
-                min_lane = min(racer)
-            
+        for racer_index, _ in enumerate(lane_matrix):
+            max_heuristic = -1
+            schedule_index = -1
+            lane_index1 = -1
+            lane_index2 = -1
+            for race_index, race in enumerate(schedule):
+                if racer_index in race:
+                    temp_heuristic, temp_lane_index1, temp_lane_index2 = possible_swap(lane_matrix, race, racer_index, target_appearances_per_lane)
+                    if temp_heuristic > max_heuristic:
+                        max_heuristic = temp_heuristic
+                        schedule_index = race_index
+                        lane_index1 = temp_lane_index1
+                        lane_index2 = temp_lane_index2
+            if max_heuristic > 0:
+                change_made = True
+                racer_swap(schedule, lane_matrix, schedule_index, lane_index1, lane_index2)
+        
     print_matrix(lane_matrix)
         
         
         
   
 if __name__=="__main__":
-    schedule, matrix = create_schedule(23,40)
+    schedule, matrix = create_schedule(13, 60)
     print(get_stats_from_matrix(matrix))
+    print("----------------------------------")
+    print_matrix(matrix)
+    print("----------------------------------")
     equalize_racing_lanes(schedule,matrix)
+    print("----------------------------------")
+    print_matrix(schedule)
     
+    
+    with open("after.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(schedule)
