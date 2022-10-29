@@ -1,1 +1,3 @@
-total_num_matchup_list[matrix[i][j]] = total_num_matchup_list[matrix[i][j]] + 1
+with open("after.csv", "w", newline="") as f:
+    #     writer = csv.writer(f)
+    #     writer.writerows(schedule)

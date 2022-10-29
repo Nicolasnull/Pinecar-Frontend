@@ -1,5 +1,4 @@
 from operator import indexOf
-from xml.dom import minicompat
 
 
 def print_matrix(matrix):
@@ -81,6 +80,7 @@ def add_racers_to_matrix(r1,r2,r3,r4,matrix):
         r4: index of racer 4, if -1 then do 3 racer addition
         matrix: 2D matrix of match ups 
     """
+    # these could be nested for loops...
     if r4 != -1:
         matrix[r1][r1] = matrix[r1][r1]+1
         matrix[r2][r2] = matrix[r2][r2]+1
@@ -121,6 +121,7 @@ def remove_racers_from_matrix(r1,r2,r3,r4,matrix):
         r4: index of racer 4
         matrix: 2D matrix of match ups 
     """
+    # this could be a nested for loop...
     matrix[r1][r1] = matrix[r1][r1]-1
     matrix[r2][r2] = matrix[r2][r2]-1
     matrix[r3][r3] = matrix[r3][r3]-1
