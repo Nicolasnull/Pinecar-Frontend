@@ -263,5 +263,11 @@ def racer_swap(schedule, lane_matrix, race_index, car1_index, car2_index):
     schedule[race_index][car1_index] = car2
     schedule[race_index][car2_index] = car1
     
+def contains_same_racer(race1, race2):
+    for racer in race1:
+        if racer in race2:
+            return True
+    return False
+    
 if __name__ == "__main__":
     steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])

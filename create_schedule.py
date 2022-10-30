@@ -1,7 +1,12 @@
 import csv
 from math import ceil
+from operator import contains, index
 import sys
+
+from matplotlib.cbook import index_of
 from random_utilities import *
+
+
 def create_schedule(number_of_racers,minimum_number_races):  
     # TODO: Make this work for any number of lanes currently only works for 4 lanes
     """ Creates a schedule that attempts to equalize the number of each possible matchup
@@ -129,10 +134,106 @@ def equalize_racing_lanes(schedule, num_racers, num_races_per_racer):
     return lane_matrix
         
         
+def shuffle_races(schedule):
+    index_of_failures = []
+    
+    for i,race in enumerate(schedule):
+        if i == 0:
+            continue
+        if contains_same_racer(race, schedule[i-1]):
+            index_of_failures.append(i)
+     
+    # no shuffling required!!!
+    if len(index_of_failures) == 0:
+        return schedule
+    
+           
+    schedule_pieces = []
+    schedule_pieces.append(schedule[ : index_of_failures[0]])
+    
+    for i in range(len(index_of_failures)-1):
+        schedule_pieces.append([schedule[index_of_failures[i]]])
+        if index_of_failures[i+1] - index_of_failures[i] > 1:
+            schedule_pieces.append(schedule[ (index_of_failures[i]+1) : (index_of_failures[i+1]) ])
+        
+    schedule_pieces.append([schedule[index_of_failures[-1]]])
+    schedule_pieces.append(schedule[index_of_failures[-1]+1 : ])
+    change_made = True
+    while(change_made):
+        change_made = False
+        for piece1 in schedule_pieces:
+            if change_made:
+                break
+            for piece2 in schedule_pieces:
+                if piece1 is piece2:
+                    continue
+                # top of piece1 can be attached to bottom of piece 2
+                if not contains_same_racer(piece1[0],piece2[-1]):
+                    temp = piece2 + piece1
+                    schedule_pieces.remove(piece1)
+                    schedule_pieces.remove(piece2)
+                    schedule_pieces.append(temp)
+                    change_made = True
+                    break
+                # bottom of piece1 can be attached to top of piece 2
+                if not contains_same_racer(piece1[-1],piece2[0]):
+                    temp = piece1 + piece2
+                    schedule_pieces.remove(piece1)
+                    schedule_pieces.remove(piece2)
+                    schedule_pieces.append(temp)
+                    change_made = True
+                    break
+                # top of piece1 can be attached to top of piece 2
+                if not contains_same_racer(piece1[0],piece2[0]):
+                    piece2.reverse()
+                    temp = piece1 + piece2
+                    schedule_pieces.remove(piece1)
+                    schedule_pieces.remove(piece2)
+                    schedule_pieces.append(temp)
+                    change_made = True
+                    break
+                # bottom of piece1 can be attached to bottom of piece 2
+                if not contains_same_racer(piece1[0],piece2[0]):
+                    piece2.reverse()
+                    temp = piece2 + piece1
+                    schedule_pieces.remove(piece1)
+                    schedule_pieces.remove(piece2)
+                    schedule_pieces.append(temp)
+                    change_made = True
+                    break
+                
+                # see if piece2 can be inserted in between piece1 somewhere
+                if len(piece1) > 1:
+                    for i in range(len(piece1)-1):
+                        if change_made:
+                            break
+                        # try with piece2 forwards
+                        if not contains_same_racer(piece1[i], piece2[0]) and not contains_same_racer(piece1[i+1], piece2[-1]):
+                            piece1[i:i]=piece2
+                            schedule_pieces.remove(piece2)
+                            change_made = True
+                            break
+                        # try with piece2 backwards
+                        if not contains_same_racer(piece1[i], piece2[-1]) and not contains_same_racer(piece1[i+1], piece2[0]):
+                            piece2.reverse()
+                            piece1[i:i]=piece2
+                            schedule_pieces.remove(piece2)
+                            change_made = True
+                            break
+    #print(len(schedule_pieces))
+    new_schedule=[]
+    for piece in schedule_pieces:
+        new_schedule.extend(piece)
+        
+    return new_schedule
+        
+            
+    
+
         
   
 if __name__=="__main__":
-    schedule, matrix = create_schedule(27, 80)
+    schedule, matrix = create_schedule(21, 50)
     print(get_stats_from_matrix(matrix))
     print("----------------------------------")
     print_matrix(matrix)
@@ -140,6 +241,21 @@ if __name__=="__main__":
     equalize_racing_lanes(schedule, len(matrix), matrix[0][0])
     print("----------------------------------")
     print_matrix(schedule)
+    print("----------------------------------")
+    counter=0
+    for i in range(len(schedule)-1):
+        if contains_same_racer(schedule[i],schedule[i+1]):
+            counter=counter+1
+            
+    
+    new_schedule = shuffle_races(schedule)
+    print(f"HELLO: {counter}")
+    counter=0
+    for i in range(len(new_schedule)-1):
+        if contains_same_racer(new_schedule[i],new_schedule[i+1]):
+            counter=counter+1
+    print(f"HELLO: {counter}")
+    # print_matrix(new_schedule)
     # with open("after.csv", "w", newline="") as f:
     #     writer = csv.writer(f)
-    #     writer.writerows(schedule)
+    #     writer.writerows(new_schedule)
