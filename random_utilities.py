@@ -53,6 +53,16 @@ def get_max_diagonal(matrix,skip_index=[]):
 
 
 def get_min_row(matrix, already_racing=[]):
+    """Finds the row of the racer that would has the minimum 
+    number of combined races with the other racers in the race
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+        already_racing (list, optional): 1D array containing the racers already in the current race. Defaults to [].
+
+    Returns:
+        int: the index of the racer that is has the minimum number of match-ups with the racers in already_racing
+    """
     min_index = -1
     min_value = 999
     for i in range(len(matrix)):
@@ -140,6 +150,14 @@ def remove_racers_from_matrix(r1,r2,r3,r4,matrix):
     matrix[r4][r3] = matrix[r4][r3]-1  
     
 def is_diagonal_equal(matrix):
+    """checks to see if all racers have participated in an equal number of races
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+
+    Returns:
+        bool: True if all numbers on the diagonal are the same
+    """
     for i in range(len(matrix)):
         if matrix[i][i] != matrix[0][0]:
             return False
@@ -147,6 +165,14 @@ def is_diagonal_equal(matrix):
 
 
 def get_all_min_on_diagonal(matrix):
+    """Gets a list of racer's indexes that are the minimum value
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+
+    Returns:
+        1D array of integers: List of racers with the minimum number of races
+    """
     min_index = get_min_diagonal(matrix)
     min_indexes = []
     for i in range(len(matrix)):
@@ -156,6 +182,14 @@ def get_all_min_on_diagonal(matrix):
     return min_indexes
 
 def get_all_max_on_diagonal(matrix):
+    """Gets a list of racer's indexes that are the maximum value
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+
+    Returns:
+        1D array of integers: List of racers with the maximum number of races
+    """
     max_index = get_max_diagonal(matrix)
     max_indexes = []
     for i in range(len(matrix)):
@@ -166,6 +200,15 @@ def get_all_max_on_diagonal(matrix):
 
 
 def steal_from_previous_race(matrix, schedule, last_race):
+    """Takes racers from previous races and adding them to the last race
+    If the last race only has 1, will need to steal from the past 2 races to make a total of 3 races of 3 racers
+    If the last race has 2 racers, will only need to steal from 1 race to make a total of 2 races of 2 racers
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+        schedule (2D schedule): schedule of races 
+        last_race (1D array): last race
+    """
     if len(last_race) == 1:
         # steal from last 2
         remove_racers_from_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],schedule[-2][3],matrix)
@@ -209,6 +252,17 @@ def steal_from_previous_race(matrix, schedule, last_race):
         
         
 def get_stats_from_matrix(matrix):
+    """Gets some stats about the races based on the matrix
+
+    Args:
+        matrix (2D Match-ups): matrix that represents the number of times 2 racers face each other in the schedule
+
+    Returns:
+        int: number of races for each racer
+        int: the max number of match-ups of a pair of racers
+        int: the min number of match-ups of a pair of racers
+        list: list representing the number of pairs of racers for each number of match-ups
+    """
     num_race_per_car = matrix[0][0]
     max_num_matchup = -1
     min_num_matchup = 999
@@ -232,6 +286,20 @@ def get_stats_from_matrix(matrix):
    
    
 def possible_swap(lane_matrix, race_arr, current_racer, target):
+    """Loops through a race and assigns scores to swapping each index with the current racer.
+    Will return the highest scoring swap (The higher the score, the better the swap is for equalizing the lanes)
+
+    Args:
+        lane_matrix (2D array): Matrix keeping track of the number of times each racer appears in each lane
+        race_arr (2D arr): List of racers in the current race
+        current_racer (int): racer that we are using to swap lanes
+        target (int): The goal number of times each racer should appear in each lane
+
+    Returns:
+        int: Highest score possible for this race
+        int: the first lane of which should be swapped
+        int: the second lane of which should be swapped
+    """
     current_racer_index = race_arr.index(current_racer)
     best_heuristic = 0
     lane1 = -1
@@ -247,11 +315,45 @@ def possible_swap(lane_matrix, race_arr, current_racer, target):
     return best_heuristic, lane1, lane2
             
 def calculate_heuristic(lane_matrix, car1_index, car1_lane, car2_index, car2_lane, target):
+    """Calculates the score of swapping 2 racers within a race
+    The goal is to get each racer's lane appearance as close to the target parameter
+    The overall score is calculated by subtracting the current score and the new score
+    The score for each lane and racer combo would be added together
+    this includes racer1 and its current lane, racer1 and the lane it would be swapped to, and the same for racer 2
+    these are subtracted from the target (how far away from the end goal are they) and then squared
+    squaring does 2 things:
+         1) keeps all distances from the goal positive
+         2) prioritizes fixing appearances in races that are far from the goal
+    If the overall score is negative, that particular swap actually obtained a worse score than before
+    If the overall score is positive, that particular swap helped get the lanes closer to the goal
+    If the overall score is 0, there was no benefit to the swap
+    
+    Args:
+        lane_matrix (2D array): Matrix keeping track of the number of times each racer appears in each lane
+        car1_index (int): racer 1
+        car1_lane (int): the lane racer 1 is in for this particular race
+        car2_index (int): racer 2
+        car2_lane (int): the lane racer 2 is in for this particular race
+        target (int): The goal number of times each racer should appear in each lane
+
+    Returns:
+        int: the score of this swap
+    """
     current_state = (lane_matrix[car1_index][car1_lane] - target)**2 + (lane_matrix[car1_index][car2_lane] - target)**2 + (lane_matrix[car2_index][car2_lane] - target)**2 + (lane_matrix[car2_index][car1_lane] - target)**2
     new_state = (lane_matrix[car1_index][car1_lane] - target - 1)**2 + (lane_matrix[car1_index][car2_lane] - target + 1)**2 + (lane_matrix[car2_index][car2_lane] - target - 1)**2 + (lane_matrix[car2_index][car1_lane] - target + 1)**2
     return current_state - new_state
 
 def racer_swap(schedule, lane_matrix, race_index, car1_index, car2_index):
+    """Swaps 2 racers that are in the <race_index> race
+    Will swap them in the schedule and update the lane_matrix
+
+    Args:
+        schedule (2D Array): The current schedule
+        lane_matrix (2D array): Matrix keeping track of the number of times each racer appears in each lane
+        race_index (int): the index of the race stored in schedule
+        car1_index (int): the lane of car 1
+        car2_index (int): the lane of car 2
+    """
     car1 = schedule[race_index][car1_index]
     car2 = schedule[race_index][car2_index]
     
@@ -264,6 +366,15 @@ def racer_swap(schedule, lane_matrix, race_index, car1_index, car2_index):
     schedule[race_index][car2_index] = car1
     
 def contains_same_racer(race1, race2):
+    """Checks to see if race1 and race 2 contain any of the same racers
+
+    Args:
+        race1 (1D array): list of the indexes of racers in race 1
+        race2 (1D array): list of the indexes of racers in race 2
+
+    Returns:
+        bool: True if they contain any of the same racers, else False
+    """
     for racer in race1:
         if racer in race2:
             return True

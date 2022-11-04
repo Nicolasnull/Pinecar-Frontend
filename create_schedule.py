@@ -1,13 +1,9 @@
 import csv
-from math import ceil
-from operator import contains, index
 import sys
-
-from matplotlib.cbook import index_of
 from random_utilities import *
 
 
-def create_schedule(number_of_racers,minimum_number_races):  
+def create_initial_schedule(number_of_racers,minimum_number_races):  
     # TODO: Make this work for any number of lanes currently only works for 4 lanes
     """ Creates a schedule that attempts to equalize the number of each possible matchup
         The algorithm will go until until it hits the minimum number of races entered
@@ -35,7 +31,7 @@ def create_schedule(number_of_racers,minimum_number_races):
     
     # original algorithm
     # first racer is chosen as the racer with the lowest number of appearances
-    # following racers are chosen based on the fewest number of matchups combined with others racing
+    # following racers are chosen based on the fewest number of match-ups combined with others racing
     while(len(schedule) < minimum_number_races):
         r1 = get_min_diagonal(racer_matrix)
         r2 = get_min_row(racer_matrix, [r1])
@@ -135,6 +131,21 @@ def equalize_racing_lanes(schedule, num_racers, num_races_per_racer):
         
         
 def shuffle_races(schedule):
+    """Attempts to shuffle around the race schedule so that there are the minimum number
+    of racers that appear in 2 sequential races in a row
+    Current algorithm: 
+    break schedule into pieces that have no racers appearing in sequential races
+    Try to put pieces on top, bellow, or in between other pieces if possible to do so
+    without having sequential races with the same racer. The goal ideal goal being ending up with only
+    1 piece having no sequential races with same racer. If that is not possible, it will still stich together
+    the remaining pieces and return the new schedule
+
+    Args:
+        schedule (2D array): current schedule
+
+    Returns:
+        2D array: new schedule either with less or an equal number of sequential races with same racer
+    """
     index_of_failures = []
     
     for i,race in enumerate(schedule):
@@ -228,12 +239,25 @@ def shuffle_races(schedule):
     return new_schedule
         
             
-    
+def create_schedule(num_racers, min_races):
+    """Create a schedule that has similar number of match-ups, equalized number of lanes for each racer 
+    and the least number of occurrences of repeat racers on sequential races
+
+    Args:
+        num_racers (integer): Number of racers
+        min_races (_type_): The lower bound of how many races desired
+
+    Returns:
+        2D array of integers: _description_
+    """
+    schedule,matrix = create_initial_schedule(num_racers,min_races)
+    equalize_racing_lanes(schedule,num_racers,matrix[0][0])
+    return shuffle_races(schedule)
 
         
   
 if __name__=="__main__":
-    schedule, matrix = create_schedule(21, 50)
+    schedule, matrix = create_initial_schedule(26, 50)
     print(get_stats_from_matrix(matrix))
     print("----------------------------------")
     print_matrix(matrix)
