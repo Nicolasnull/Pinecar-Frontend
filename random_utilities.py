@@ -379,6 +379,16 @@ def contains_same_racer(race1, race2):
         if racer in race2:
             return True
     return False
+
+def swap_index_for_racer_number(schedule,racers):
+    schedule_with_actual_numbers = []
+    
+    for race in schedule:
+        temp = []
+        for racer in race:
+            temp.append(int(racers[racer].car_number))
+        schedule_with_actual_numbers.append(temp)
+    return schedule_with_actual_numbers
     
 if __name__ == "__main__":
     steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])

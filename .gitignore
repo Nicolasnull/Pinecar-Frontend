@@ -2,3 +2,8 @@ Pine Car Derby TODOS.docx
 ~$ne Car Derby TODOS.docx
 after.csv
 out.csv
+MyRacers.csv
+schedule.csv
+__pycache__/create_schedule.cpython-38.pyc
+__pycache__/menu_builder.cpython-38.pyc
+__pycache__/random_utilities.cpython-38.pyc
