@@ -90,10 +90,7 @@ def equalize_racing_lanes(schedule, num_racers, num_races_per_racer):
         2D array of integers num_racers X num_lanes: A matrix containing the stats on how many time each racer uses each lane
     """
     # matrix to keep track of how many times each racer appears in each lane
-    lane_matrix = [[0 for _ in range(len(schedule[0]))] for _ in range(num_racers)]
-    for race in schedule:
-        for i in range(len(race)):
-            lane_matrix[race[i]][i] = lane_matrix[race[i]][i] + 1
+    lane_matrix = generate_lane_matrix(schedule,num_racers)
     
     # This is the target used for the heuristic
     # the closer the number of appearances is to this target, the better the heuristic
@@ -248,7 +245,7 @@ def create_schedule(num_racers, min_races):
         min_races (_type_): The lower bound of how many races desired
 
     Returns:
-        2D array of integers: _description_
+        2D array of integers: Schedule
     """
     schedule,matrix = create_initial_schedule(num_racers,min_races)
     equalize_racing_lanes(schedule,num_racers,matrix[0][0])

@@ -250,7 +250,53 @@ def steal_from_previous_race(matrix, schedule, last_race):
         add_racers_to_matrix(schedule[-2][0],schedule[-2][1],schedule[-2][2],-1,matrix)
         add_racers_to_matrix(schedule[-1][0],schedule[-1][1],schedule[-1][2],-1,matrix)
         
+def get_stats_from_schedule(schedule, num_racers):
+    """Returns stats about schedule
+    Will track stats on:
+    - Racer match-ups
+    - Lane counts
+    - Count on appearing in 2 consecutive races
+
+    Args:
+        schedule (2D Array): Schedule
+        num_racers (int): Number of racers
+
+    Returns:
+        Stats on match-ups: 
+            int: number of races for each racer
+            int: the max number of match-ups of a pair of racers
+            int: the min number of match-ups of a pair of racers
+            list: list representing the number of pairs of racers for each number of match-ups
+        Additional stats:
+            int: min number of appearances in a lane
+            int: max number of appearances in a lane
+            int: Number of races that contain the same racer back to back
+    """
+    matrix = []
+    for _ in range(num_racers):
+        temp=[]
+        for _ in range(num_racers):
+            temp.append(0)
+        matrix.append(temp)
         
+    two_races_in_a_row = 0
+    for i,race in enumerate(schedule):
+        # generate matchup matrix
+        if len(race) == 4:
+            add_racers_to_matrix(race[0],race[1],race[2],race[3],matrix)
+        else:
+            add_racers_to_matrix(race[0],race[1],race[2],-1,matrix)
+        
+        # count number of racers in back to back races
+        if i > 0 and contains_same_racer(race,schedule[i-1]):
+            two_races_in_a_row = two_races_in_a_row+1
+            
+        lane = generate_lane_matrix(schedule,num_racers)
+        min_lane = min([min(r) for r in lane])
+        max_lane = max([max(r) for r in lane])
+        
+    return get_stats_from_matrix(matrix), min_lane, max_lane, two_races_in_a_row
+    
 def get_stats_from_matrix(matrix):
     """Gets some stats about the races based on the matrix
 
@@ -283,7 +329,21 @@ def get_stats_from_matrix(matrix):
     
     
     return num_race_per_car, max_num_matchup, min_num_matchup, total_num_matchup_list
-   
+
+def generate_lane_matrix(schedule,num_racers):
+    """Generates a matrix that counts how many appearances each racer has in each lane
+
+    Args:
+        schedule (2D Array): Schedule
+        num_racers (int): Number of racers in Schedule
+    Returns:
+        2D Array: Lane Matrix
+    """
+    lane_matrix = [[0 for _ in range(len(schedule[0]))] for _ in range(num_racers)]
+    for race in schedule:
+        for i in range(len(race)):
+            lane_matrix[race[i]][i] = lane_matrix[race[i]][i] + 1 
+    return lane_matrix 
    
 def possible_swap(lane_matrix, race_arr, current_racer, target):
     """Loops through a race and assigns scores to swapping each index with the current racer.
