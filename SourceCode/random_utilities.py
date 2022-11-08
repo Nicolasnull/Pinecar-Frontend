@@ -450,5 +450,13 @@ def swap_index_for_racer_number(schedule,racers):
         schedule_with_actual_numbers.append(temp)
     return schedule_with_actual_numbers
     
+
+def get_racer_by_id(all_racers, id):
+    for racer in all_racers:
+        print(f"racer id: {racer.car_number} looking for: {id}")
+        if racer.car_number == str(id):
+            return racer
+    return -1
+
 if __name__ == "__main__":
     steal_from_previous_race([[4,4,4,4],[4,4,4,4],[4,4,4,4],[4,4,4,4]],[[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]],[1,3])
