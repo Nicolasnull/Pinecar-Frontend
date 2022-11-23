@@ -18,7 +18,7 @@ def get_top_scores(list_of_all_racers, number):
     Returns:
         1D Array: List of the top number of racers
     """
-    list_of_all_racers = sorted(list_of_all_racers, reverse=True)
+    list_of_all_racers = sorted(list_of_all_racers, reverse=True) # want to sort from highest score to lowest
     return list_of_all_racers[:number]
 
 def race_day(schedule, racers):
