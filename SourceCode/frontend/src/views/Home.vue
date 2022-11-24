@@ -1,18 +1,39 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <button v-on:click="toSchedule">Schedule</button>
+    <button v-on:click="toScorers">Scorers</button>
+    <button v-on:click="toScoreBoard">Score Board</button>
+    <button v-on:click="toDad">Dad</button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
+import router from "@/router/index.js";
 export default {
   name: "Home",
   components: {
-    HelloWorld,
+  },
+  methods: {
+    toScoreBoard(){
+      router.push({
+        path: "/scoreboard"
+      })
+    },
+    toDad(){
+      router.push({
+        path:"/dad"
+      })
+    },
+    toSchedule(){
+      router.push({
+        path:"/schedule"
+      })
+    },
+    toScorers(){
+      router.push({
+        path:"/scorers"
+      })
+    },
   },
 };
 </script>
