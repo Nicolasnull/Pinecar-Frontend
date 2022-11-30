@@ -1,9 +1,9 @@
 <template>
   <div class="home">
-    <button v-on:click="toSchedule">Schedule</button>
-    <button v-on:click="toScorers">Scorers</button>
-    <button v-on:click="toScoreBoard">Score Board</button>
-    <button v-on:click="toDad">Dad</button>
+    <v-btn v-on:click="toSchedule">Schedule</v-btn>
+    <v-btn v-on:click="toScorers">Scorers</v-btn>
+    <v-btn v-on:click="toScoreBoard">Score Board</v-btn>
+    <v-btn v-on:click="toDad">Dad</v-btn>
   </div>
 </template>
 
@@ -11,28 +11,27 @@
 import router from "@/router/index.js";
 export default {
   name: "Home",
-  components: {
-  },
+  components: {},
   methods: {
-    toScoreBoard(){
+    toScoreBoard() {
       router.push({
-        path: "/scoreboard"
-      })
+        path: "/scoreboard",
+      });
     },
-    toDad(){
+    toDad() {
       router.push({
-        path:"/dad"
-      })
+        path: "/dad",
+      });
     },
-    toSchedule(){
+    toSchedule() {
       router.push({
-        path:"/schedule"
-      })
+        path: "/schedule",
+      });
     },
-    toScorers(){
+    toScorers() {
       router.push({
-        path:"/scorers"
-      })
+        path: "/scorers",
+      });
     },
   },
 };

@@ -8,17 +8,15 @@
 <script>
 import router from "@/router/index.js";
 export default {
-    name: "Schedule",
-    methods:{
-        toHome(){
-            router.push({
-                path:"/"
-            })
-        }
+  name: "Schedule",
+  methods: {
+    toHome() {
+      router.push({
+        path: "/",
+      });
     },
-}
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
