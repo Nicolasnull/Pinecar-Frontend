@@ -34,7 +34,7 @@ export default new Vuex.Store({
     //Scorers
     async getFullSchedule() {
       let mySchedule = [
-        { raceId: 1, racers: [1, 2, 3, 4], scores: [0, 0, 0, 0] },
+        { raceId: 1, racers: [12, 2, 3, 42], scores: [0, 0, 0, 0] },
         { raceId: 2, racers: [2, 3, 4, 1], scores: [0, 0, 0, 0] },
         { raceId: 3, racers: [3, 4, 1, 2], scores: [0, 0, 0, 0] },
         { raceId: 4, racers: [4, 1, 2, 3], scores: [0, 0, 0, 0] },

@@ -42,7 +42,17 @@
                     :color="currentRaceScores[0] === 0 ? 'red' : 'red darken-4'"
                     class="my-card"
                     v-on:click="scoreLane(0)">
-                        {{currentRaceRacers[0]}}
+                        <v-row>
+                            <v-col v-if="(currentRaceScores[0]>0)">
+                                <img v-if="(currentRaceScores[0]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[0]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[0]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                <div v-if="(currentRaceScores[0]===1)">L</div>
+                            </v-col>
+                            <v-col>
+                                {{currentRaceRacers[0]}}
+                            </v-col>
+                        </v-row>
                     </v-card>
                 </v-col>
                 <v-col cols="6">
@@ -51,7 +61,17 @@
                     :color="currentRaceScores[1] === 0 ? 'blue' : 'blue darken-4'"
                     class="my-card"
                     v-on:click="scoreLane(1)">
-                        {{currentRaceRacers[1]}}
+                        <v-row>
+                            <v-col v-if="(currentRaceScores[1]>0)">
+                                <img v-if="(currentRaceScores[1]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[1]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[1]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                <div v-if="(currentRaceScores[1]===1)">L</div>
+                            </v-col>
+                            <v-col>
+                                {{currentRaceRacers[1]}}
+                            </v-col>
+                        </v-row>
                     </v-card>
                 </v-col>
             </v-row>
@@ -62,7 +82,17 @@
                     :color="currentRaceScores[2] === 0 ? 'green' : 'green darken-4'"
                     class="my-card"
                     v-on:click="scoreLane(2)">
-                        {{currentRaceRacers[2]}}
+                        <v-row>
+                            <v-col v-if="(currentRaceScores[2]>0)">
+                                <img v-if="(currentRaceScores[2]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[2]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[2]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                <div v-if="(currentRaceScores[2]===1)">L</div>
+                            </v-col>
+                            <v-col>
+                                {{currentRaceRacers[2]}}
+                            </v-col>
+                        </v-row>
                     </v-card>
                 </v-col>
                 <v-col cols="6">
@@ -71,7 +101,17 @@
                     :color="currentRaceScores[3] === 0 ? 'yellow' : 'yellow darken-4'"
                     class="my-card"
                     v-on:click="scoreLane(3)">
-                        {{currentRaceRacers[3]}}
+                        <v-row>
+                            <v-col v-if="(currentRaceScores[3]>0)">
+                                <img v-if="(currentRaceScores[3]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[3]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                <img v-if="(currentRaceScores[3]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                <div v-if="(currentRaceScores[3]===1)">L</div>
+                            </v-col>
+                            <v-col>
+                                {{currentRaceRacers[3]}}
+                            </v-col>
+                        </v-row>
                     </v-card>
                 </v-col>
             </v-row>
@@ -80,7 +120,8 @@
                 <v-col cols="4">
                     <v-btn 
                         v-on:click="previousRace"
-                        fab>
+                        fab
+                        v-if="!firstRace()">
                         <v-icon large>
                             mdi-arrow-left-drop-circle-outline
                         </v-icon>
@@ -100,12 +141,26 @@
                 </v-col>
                 <v-col cols="4">
                     <v-btn 
+                        v-on:click="finish()"
+                        fab
+                        v-if="allScored()&&lastRace()"
+                        >
+                        <v-icon large 
+                        v-if="lastRace()"
+                        color="green">
+                            mdi-check
+                        </v-icon>
+                    </v-btn>
+                    <v-btn 
                         v-on:click="nextRace"
-                        fab>
+                        fab
+                        v-if="(allScored()&&!lastRace())"
+                        >
                         <v-icon large>
                             mdi-arrow-right-drop-circle-outline
                         </v-icon>
                     </v-btn>
+                    
                 </v-col>
             </v-row>
         </div>
@@ -122,6 +177,7 @@ export default {
     currentRaceId: null,
     currentRaceRacers: [],
     currentRaceScores: [],
+    currentRaceAlreadyScored:false,
     renderButton: true,
   }),
   computed: {
@@ -146,6 +202,15 @@ export default {
         this.currentRaceId++;
         this.currentRaceRacers = this.schedule[this.currentRaceId].racers;
         this.currentRaceScores = this.schedule[this.currentRaceId].scores;
+        if(!this.currentRaceAlreadyScored){
+            this.submitRaceScore();
+        }
+        if(this.allScored()){
+            this.currentRaceAlreadyScored=true
+        }
+        else{
+            this.currentRaceAlreadyScored=false
+        }
       }
     },
     previousRace() {
@@ -153,6 +218,7 @@ export default {
         this.currentRaceId--;
         this.currentRaceRacers = this.schedule[this.currentRaceId].racers;
         this.currentRaceScores = this.schedule[this.currentRaceId].scores;
+        this.currentRaceAlreadyScored=true
       }
     },
     clearRace() {
@@ -163,6 +229,7 @@ export default {
         this.$nextTick(() => {
             this.renderButton=true;
         })
+        this.currentRaceAlreadyScored=false
     },
     scoreLane(laneNumber){
         if(this.currentRaceScores[laneNumber] > 0){
@@ -178,7 +245,29 @@ export default {
         this.$nextTick(() => {
             this.renderButton=true;
         })
-        console.log(this.currentRaceScores);
+    },
+    allScored(){
+        for(let score in this.currentRaceScores){
+            if(this.currentRaceScores[score] < 1){
+                return false;
+            }
+        }
+        return true;
+    },
+    lastRace(){
+        return this.schedule.length-1 === this.currentRaceId;
+    },
+    firstRace(){
+        return this.currentRaceId === 0;
+    },
+    finish(){
+        if(!this.currentRaceAlreadyScored){
+            this.submitRaceScore();
+        }
+        this.toHome();
+    },
+    submitRaceScore(){
+        console.log("Sending score for race" + this.currentRaceId)
     },
   },
 };
