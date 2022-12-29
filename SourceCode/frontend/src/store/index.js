@@ -14,6 +14,9 @@ export default new Vuex.Store({
       currentRaceRacers: [],
       currentRaceScores: [],
     },
+    ScoreBoard:{
+      scoreBoard:[]
+    },
   },
   mutations: {
     // Scorers
@@ -27,6 +30,10 @@ export default new Vuex.Store({
       state.Scorers.currentRaceId = currentRaceId;
       state.Scorers.currentRaceRacers = currentRaceRacers;
       state.Scorers.currentRaceScores = currentRaceScores;
+    },
+    //Score Board
+    updateScoreBoard(state, {scoreBoard}){
+      state.ScoreBoard.scoreBoard=scoreBoard;
     },
   },
   getters: {},
@@ -45,6 +52,15 @@ export default new Vuex.Store({
         racers: [1, 2, 3, 4],
         scores: [0, 0, 0, 0],
       });
+    },
+    async getScoreBoard(){
+      let myScoreBoard = [
+        {racerNumber: 3, racerName: "Julia N.", racerScore:12, numberOfRaces: 3},
+        {racerNumber: 2, racerName: "Nate N.", racerScore:9, numberOfRaces: 3},
+        {racerNumber: 4, racerName: "Kate N.", racerScore:6, numberOfRaces: 3},
+        {racerNumber: 1, racerName: "Nic N.", racerScore:3, numberOfRaces: 3},
+      ];
+      this.commit("updateScoreBoard", { scoreBoard: myScoreBoard });
     },
   },
 });
