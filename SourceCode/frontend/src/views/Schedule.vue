@@ -146,10 +146,10 @@ export default {
     ],
     racerNameRules: [
       v => v !="" || "Racer id is required.",
-      v => v.length < 3 || "Can only have a racer id of length 2 or less."
     ],
     racerIdRules: [
-      v => v !="" || "Field is required."
+      v => v !="" || "Field is required.",
+      v => v.length < 3 || "Can only have a racer id of length 2 or less."
     ],
     valid: false,
     numRaces: "",
