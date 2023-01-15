@@ -50,7 +50,7 @@
             <v-row>
               <v-col sm="2">
                 <v-text-field
-                  v-model="racer.racerId"
+                  v-model="racer.id"
                   :rules="racerIdRules"
                   label="Number"
                 >
@@ -58,7 +58,7 @@
               </v-col>
               <v-col sm="8">
                 <v-text-field
-                  v-model="racer.racerName"
+                  v-model="racer.name"
                   label="Name"
                   :rules="racerNameRules"
                 >
@@ -135,6 +135,7 @@
 
 <script>
 import router from "@/router/index.js";
+import { updateAllRacers,getAllRacers } from "../firebase"
 export default {
   name: "Schedule",
   components: {
@@ -153,10 +154,11 @@ export default {
     ],
     valid: false,
     numRaces: "",
-    racers:[{racerId: "", racerName: ""}],
+    racers: [],
+    removedRacers: [],
   }),
-  created() {
-
+  async created() {
+    this.racers = await getAllRacers();
   },
   methods: {
     toHome() {
@@ -165,13 +167,14 @@ export default {
       });
     },
     addRacer(){
-      this.racers.push({racerId: "", racerName: ""});
+      this.racers.push({dbId: undefined, id: "", name: "", score: 0});
     }, 
     removeRacer(index){
+      this.removedRacers.push(this.racers[index]);
       this.racers.splice(index,1);
     },
-    createSchedule(){
-      console.log("accepted");
+    async createSchedule(){
+      await updateAllRacers(this.racers, this.removedRacers)
     },
   },
 };
