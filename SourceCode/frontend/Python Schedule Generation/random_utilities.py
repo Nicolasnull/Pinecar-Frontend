@@ -291,9 +291,9 @@ def get_stats_from_schedule(schedule, num_racers):
         if i > 0 and contains_same_racer(race,schedule[i-1]):
             two_races_in_a_row = two_races_in_a_row+1
             
-        lane = generate_lane_matrix(schedule,num_racers)
-        min_lane = min([min(r) for r in lane])
-        max_lane = max([max(r) for r in lane])
+    lane = generate_lane_matrix(schedule,num_racers)
+    min_lane = min([min(r) for r in lane])
+    max_lane = max([max(r) for r in lane])
         
     return get_stats_from_matrix(matrix), min_lane, max_lane, two_races_in_a_row
     
