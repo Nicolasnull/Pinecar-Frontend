@@ -21,15 +21,13 @@
     </v-card>
 
     <br>
-    <v-card 
-      class="my-card"
-      elevation="5"
-    >
-      <v-form v-model="valid">
-        <v-card
-          class="my-row"
-          elevation="2"
-        >
+    <v-form v-model="valid">
+      <v-card 
+        class="my-card"
+        elevation="5"
+      >
+      <v-card
+        class="my-row">
           <v-row>
             <v-col>
               <v-text-field
@@ -40,8 +38,22 @@
               </v-text-field>
             </v-col>
           </v-row>
-        </v-card>
-        <hr class="thick-boy-line" />
+        </v-card> 
+      </v-card>
+      <v-card
+        class="my-card"
+        elevation="5"
+      >
+      <v-row>
+        <v-col>
+          <v-btn
+          v-on:click="sortRacersById()">Sort By Id</v-btn>
+        </v-col>
+        <v-col>
+          <v-btn
+          v-on:click="sortRacersByName()">Sort By Name</v-btn>
+        </v-col>
+      </v-row>
         <div v-for="(racer, i) in racers" :key="i">
           <v-card
             class="my-row"
@@ -108,8 +120,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="0" sm="6" md="8"></v-col>
-          <v-col sm="3" md="2">
+          <v-col>
             <v-btn
               color="error"
               v-on:click="toHome()"
@@ -117,25 +128,34 @@
               Cancel
             </v-btn>
           </v-col>
-          <v-col sm="3" md="2">
+          <v-col>
             <v-btn
               color="success"
               type="submit"
               :disabled="!valid"
+              v-on:click="saverRacers()"
+            >
+              Save Racers
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn
+              :disabled="!valid"
               v-on:click="createSchedule()"
             >
-              Accept
+              Create Schedule
             </v-btn>
           </v-col>
         </v-row>
-      </v-form>
-    </v-card>
+      </v-card>
+    </v-form>
   </v-app>
 </template>
 
 <script>
 import router from "@/router/index.js";
 import { updateAllRacers,getAllRacers } from "../firebase"
+import {generateSchedule} from "../scheduleGenAlgo/generateSchedule"
 export default {
   name: "Schedule",
   components: {
@@ -150,7 +170,7 @@ export default {
     ],
     racerIdRules: [
       v => v !="" || "Field is required.",
-      v => v.length < 3 || "Can only have a racer id of length 2 or less."
+      v => v.length < 3 || "Can only have a racer id of length 2 or less.",
     ],
     valid: false,
     numRaces: "",
@@ -159,6 +179,7 @@ export default {
   }),
   async created() {
     this.racers = await getAllRacers();
+    this.sortRacersById();
   },
   methods: {
     toHome() {
@@ -168,13 +189,40 @@ export default {
     },
     addRacer(){
       this.racers.push({dbId: undefined, id: "", name: "", score: 0});
+    },
+    sortRacersByName(){
+      this.racers.sort((a,b) =>{
+        return a.name.localeCompare(b.name);
+      });
     }, 
+    sortRacersById(){
+      this.racers.sort((a,b) =>{
+      if(!isNaN(a.id) && !isNaN(b.id)){
+        return Number(a.id) - Number(b.id)
+      }
+        return a.id.localeCompare(b.id);
+      });
+    },
     removeRacer(index){
       this.removedRacers.push(this.racers[index]);
       this.racers.splice(index,1);
     },
+    async saverRacers(){
+      let racerIds = this.racers.map(racer => racer.id);
+      if((new Set(racerIds)).size != racerIds.length){
+        alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
+        return;
+      }
+      await updateAllRacers(this.racers, this.removedRacers);
+    },
     async createSchedule(){
-      await updateAllRacers(this.racers, this.removedRacers)
+      let racerIds = this.racers.map(racer => racer.id);
+      if((new Set(racerIds)).size != racerIds.length){
+        alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
+        return;
+      }
+      let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.id));
+      console.log(scheduleObject);
     },
   },
 };
@@ -184,6 +232,7 @@ export default {
   .my-card{
     margin-left:2.5%;
     margin-right:2.5%;
+    margin-top:20px;
   }
   .my-row{
     padding-left:2.5%;
@@ -192,9 +241,5 @@ export default {
     margin-right:2.5%;
     margin-top:15px;
     margin-bottom: 20px;
-  }
-  .thick-boy-line{
-    border:0;
-    border-top: 2px solid rgb(146, 146, 146)
   }
 </style>

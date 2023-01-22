@@ -93,27 +93,6 @@ function removeRacersFromMatrix(r1,r2,r3,r4,matrix){
     matrix[r4][r3] = matrix[r4][r3]-1; 
 }
 
-function isDiagonalEqual(matrix){
-    for(let i = 0; i < matrix.length; i++){
-        if(matrix[i][i] != matrix[0][0]){
-            return false;
-        }
-    }
-    return true;
-}
-
-function getAllMinOnDiagonal(matrix){
-    let minIndex = getMinDiagonal(matrix);
-    let minIndexes = [];
-
-    for(let i = 0; i < matrix.length; i++){
-        if(matrix[i][i] == matrix[minIndex][minIndex]){
-            minIndexes.push(i);
-        }
-    }
-    return minIndexes;
-}
-
 function getAllMaxOnDiagonal(matrix){
     let maxIndex = getMaxDiagonal(matrix,[]);
     let maxIndexes = [];
@@ -153,7 +132,7 @@ function stealFromPreviousRace(matrix, schedule, lastRace){
     }
     else if (lastRace.length == 2) {
         removeRacersFromMatrix(schedule[schedule.length-1][0],schedule[schedule.length-1][1],schedule[schedule.length-1][2],schedule[schedule.length-1][3],matrix);
-        tempStolen = schedule[schedule.length-1].pop();
+        let tempStolen = schedule[schedule.length-1].pop();
         while(lastRace.includes(tempStolen)){
             schedule[schedule.length-1].unshift(tempStolen);
             tempStolen = schedule[schedule.length-1].pop();
@@ -258,6 +237,12 @@ function generateLaneMatrix(schedule, numRacers){
         laneMatrix.push(racer);
     }
 
+    for(let i = 0; i < schedule.length; i++){
+        for(let j = 0; j < schedule[i].length; j++){
+            laneMatrix[schedule[i][j]][j]++;
+        }
+    }
+
     return laneMatrix;
 }
 
@@ -315,29 +300,6 @@ function containsSameRacer(race1, race2){
     return false;
 }
 
-function swapIndexForRacerNumber(schedule, racers){
-    scheduleWithActualNumbers = []
-
-    for(let i = 0; i < schedule.length; i++){
-        let temp = [];
-        for(let j = 0; j < schedule[i].length; j++){
-            temp.push(racers[schedule[i].carNumber]);
-        }
-        scheduleWithActualNumbers.push(temp);
-    }
-    return scheduleWithActualNumbers;
-}
-
-function getRacerById(allRacers, id){
-    for(let i = 0; i < allRacers.length; i++){
-        if(allRacers[i].carNumber == id){
-            return allRacers[i];
-        }
-    }
-    return -1;
-}
-
-
 // translated from create_schedule.py
 function createInitialSchedule(numberOfRacers, minimumNumberRaces){
     let schedule = [];
@@ -360,8 +322,8 @@ function createInitialSchedule(numberOfRacers, minimumNumberRaces){
         addRacersToMatrix(r1,r2,r3,r4,racerMatrix);
         schedule.push([r1,r2,r3,r4]);
     }
-
-    while(true){
+    let t = true;
+    while(t){
         let racersWithFullSchedule = getAllMaxOnDiagonal(racerMatrix);
         if(racersWithFullSchedule.length == racerMatrix.length){
             break;
@@ -566,27 +528,41 @@ function shuffleRaces(schedule){
     return newSchedule;
 }
 
-function createSchedule(numRacers, minRaces){
+function useRealNumbers(schedule, racerNumbers){
+    for(let i =0; i < schedule.length; i++){
+        for(let j = 0; j < schedule[i].length; j++){
+            schedule[i][j] = racerNumbers[schedule[i][j]];
+        }
+    }
+}
+
+export function generateSchedule(numRacers, minRaces, racerNumbers){
     let initialScheduleObject = createInitialSchedule(numRacers, minRaces);
     equalizeRacingLanes(initialScheduleObject.schedule,numRacers,initialScheduleObject.racerMatrix[0][0]);
-    return shuffleRaces(initialScheduleObject.schedule);
+    let schedule = shuffleRaces(initialScheduleObject.schedule);
+    let stats = getStatsFromSchedule(schedule, numRacers);
+    useRealNumbers(schedule, racerNumbers);
+    return {
+        schedule: schedule,
+        stats: stats
+    };
 }
 
 
 // testing
-function testing(arg1, arg2){
+export function testing(arg1, arg2){
     let object = createInitialSchedule(arg1, arg2);
-    //console.log("Stats", getStatsFromMatrix(object.racerMatrix));
-    //console.log("Racer Matrix",object.racerMatrix);
+    console.log("Stats", getStatsFromMatrix(object.racerMatrix));
+    console.log("Racer Matrix",object.racerMatrix);
     equalizeRacingLanes(object.schedule, object.racerMatrix.length, object.racerMatrix[0][0]);
-    //console.log("Schedule before shuffle races", object.schedule);
+    console.log("Schedule before shuffle races", object.schedule);
     let counter = 0; 
     for(let i = 0; i < object.schedule.length - 1; i++){
         if(containsSameRacer(object.schedule[i], object.schedule[i+1])){
             counter++;
         }
     }
-    //console.log("Count before shuffle", counter);
+    console.log("Count before shuffle", counter);
 
     let newSchedule = shuffleRaces(object.schedule);
     counter = 0;
@@ -596,7 +572,7 @@ function testing(arg1, arg2){
             counter++;
         }
     }
-    //console.log("Count After Shuffle", counter);
+    console.log("Count After Shuffle", counter);
 
 
     let gutCheck = [];
@@ -636,7 +612,9 @@ function testing(arg1, arg2){
             console.log(ogsos);
         }
     }
+    console.log(getStatsFromSchedule(newSchedule,arg1));
 }
+testing(25,50);
 // ALL COMBINATIONS BETWEEN 4-100 racers and between 5 and 250 races 
 // at the bare minimum all race the same number of times as everyone else:)
 // for(let i = 4; i < 100; i++){
