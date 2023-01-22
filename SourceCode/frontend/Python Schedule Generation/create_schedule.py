@@ -201,7 +201,7 @@ def shuffle_races(schedule):
                     change_made = True
                     break
                 # bottom of piece1 can be attached to bottom of piece 2
-                if not contains_same_racer(piece1[0],piece2[0]):
+                if not contains_same_racer(piece1[-1],piece2[-1]):
                     piece2.reverse()
                     temp = piece2 + piece1
                     schedule_pieces.remove(piece1)
@@ -254,7 +254,7 @@ def create_schedule(num_racers, min_races):
         
   
 if __name__=="__main__":
-    schedule, matrix = create_initial_schedule(26, 50)
+    schedule, matrix = create_initial_schedule(17, 60)
     print(get_stats_from_matrix(matrix))
     print("----------------------------------")
     print_matrix(matrix)
@@ -270,6 +270,7 @@ if __name__=="__main__":
             
     
     new_schedule = shuffle_races(schedule)
+    print_matrix(new_schedule)
     print(f"HELLO: {counter}")
     counter=0
     for i in range(len(new_schedule)-1):

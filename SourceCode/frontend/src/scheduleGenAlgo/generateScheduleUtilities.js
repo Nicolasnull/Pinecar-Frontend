@@ -1,3 +1,4 @@
+// copied into generateSchedule.js
 function getMinDiagonal(matrix,skipIndex){
     let minIndex = -1;
     for (let i = 0; i < matrix.length; i++){
