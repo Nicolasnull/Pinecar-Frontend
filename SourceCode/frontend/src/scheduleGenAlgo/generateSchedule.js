@@ -614,7 +614,7 @@ export function testing(arg1, arg2){
     }
     console.log(getStatsFromSchedule(newSchedule,arg1));
 }
-testing(25,50);
+//testing(25,50);
 // ALL COMBINATIONS BETWEEN 4-100 racers and between 5 and 250 races 
 // at the bare minimum all race the same number of times as everyone else:)
 // for(let i = 4; i < 100; i++){

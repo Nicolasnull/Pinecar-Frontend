@@ -3,8 +3,9 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import ScoreBoard from "../views/ScoreBoard.vue";
 import Dad from "../views/Dad.vue";
-import Schedule from "../views/Schedule.vue";
+import ScheduleBuilder from "../views/ScheduleBuilder.vue";
 import Scorers from "../views/Scorers.vue";
+import Schedule from "../views/Schedule.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,11 @@ const routes = [
     path: "/Dad",
     name: "Dad",
     component: Dad,
+  },
+  {
+    path: "/schedule-builder",
+    name: "ScheduleBuilder",
+    component: ScheduleBuilder,
   },
   {
     path: "/schedule",

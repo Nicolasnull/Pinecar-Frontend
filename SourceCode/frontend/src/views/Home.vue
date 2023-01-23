@@ -1,9 +1,10 @@
 <template>
   <div class="home">
-    <v-btn v-on:click="toSchedule">Schedule</v-btn>
+    <v-btn v-on:click="toScheduleBuilder">ScheduleBuilder</v-btn>
     <v-btn v-on:click="toScorers">Scorers</v-btn>
     <v-btn v-on:click="toScoreBoard">Score Board</v-btn>
     <v-btn v-on:click="toDad">Dad</v-btn>
+    <v-btn v-on:click="toSchedule">Schedule</v-btn>
   </div>
 </template>
 
@@ -21,6 +22,11 @@ export default {
     toDad() {
       router.push({
         path: "/dad",
+      });
+    },
+    toScheduleBuilder() {
+      router.push({
+        path: "/schedule-builder",
       });
     },
     toSchedule() {
