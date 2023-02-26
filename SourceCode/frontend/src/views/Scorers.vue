@@ -27,13 +27,13 @@
         <div>
             <v-card>
                 <h3>
-                    Race {{currentRaceId+1}} / {{schedule.length}}
+                    Race {{currentRaceId+1}} / {{Scorers.schedule.length}}
                 </h3>
             </v-card>
         </div>
         <br>
 
-        <div class="main-content">
+        <div class="main-content" v-if="render">
             <v-row>
                 <v-col cols="6">
                     <v-card 
@@ -50,7 +50,7 @@
                                 <div v-if="(currentRaceScores[0]===1)">L</div>
                             </v-col>
                             <v-col>
-                                {{currentRaceRacers[0]}}
+                                {{racersMap.get(currentRaceRacers[0]).id}}
                             </v-col>
                         </v-row>
                     </v-card>
@@ -69,7 +69,7 @@
                                 <div v-if="(currentRaceScores[1]===1)">L</div>
                             </v-col>
                             <v-col>
-                                {{currentRaceRacers[1]}}
+                                {{racersMap.get(currentRaceRacers[1]).id}}
                             </v-col>
                         </v-row>
                     </v-card>
@@ -90,7 +90,7 @@
                                 <div v-if="(currentRaceScores[2]===1)">L</div>
                             </v-col>
                             <v-col>
-                                {{currentRaceRacers[2]}}
+                                {{racersMap.get(currentRaceRacers[2]).id}}
                             </v-col>
                         </v-row>
                     </v-card>
@@ -108,8 +108,11 @@
                                 <img v-if="(currentRaceScores[3]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
                                 <div v-if="(currentRaceScores[3]===1)">L</div>
                             </v-col>
-                            <v-col>
-                                {{currentRaceRacers[3]}}
+                            <v-col v-if="currentRaceRacers[3]">
+                                {{racersMap.get(currentRaceRacers[3]).id}}
+                            </v-col>
+                            <v-col v-else>
+                                Empty Lane
                             </v-col>
                         </v-row>
                     </v-card>
@@ -170,26 +173,28 @@
 <script>
 import { mapState } from "vuex";
 import router from "../router";
+import {updateScore} from "../firebase"
 export default {
   name: "Scorers",
   data: () => ({
-    schedule: [],
     currentRaceId: null,
     currentRaceRacers: [],
     currentRaceScores: [],
     currentRaceAlreadyScored:false,
     renderButton: true,
+    render: false,
   }),
   computed: {
-    ...mapState(["Scorers"]),
+    ...mapState(["Scorers", "scheduleId", "racersId", "racers", "racersMap"]),
   },
   async created() {
     window.scrollTo(0, 0);
-    await this.$store.dispatch("getFullSchedule");
-    this.schedule = this.Scorers.schedule;
+    await this.$store.dispatch("getFullSchedule",{scheduleId: this.scheduleId});
+    await this.$store.dispatch("getAllRacers", {racersId: this.racersId});
     this.currentRaceId = 0;
-    this.currentRaceRacers = this.schedule[this.currentRaceId].racers;
-    this.currentRaceScores = this.schedule[this.currentRaceId].scores;
+    this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+    this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
+    this.render=true;
   },
   methods: {
     toHome() {
@@ -198,13 +203,13 @@ export default {
       });
     },
     nextRace() {
-      if (this.currentRaceId < this.schedule.length - 1) {
-        this.currentRaceId++;
-        this.currentRaceRacers = this.schedule[this.currentRaceId].racers;
-        this.currentRaceScores = this.schedule[this.currentRaceId].scores;
+      if (this.currentRaceId < this.Scorers.schedule.length - 1) {
         if(!this.currentRaceAlreadyScored){
             this.submitRaceScore();
         }
+        this.currentRaceId++;
+        this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+        this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
         if(this.allScored()){
             this.currentRaceAlreadyScored=true
         }
@@ -216,8 +221,8 @@ export default {
     previousRace() {
       if (this.currentRaceId > 0) {
         this.currentRaceId--;
-        this.currentRaceRacers = this.schedule[this.currentRaceId].racers;
-        this.currentRaceScores = this.schedule[this.currentRaceId].scores;
+        this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+        this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
         this.currentRaceAlreadyScored=true
       }
     },
@@ -255,7 +260,7 @@ export default {
         return true;
     },
     lastRace(){
-        return this.schedule.length-1 === this.currentRaceId;
+        return this.Scorers.schedule.length-1 === this.currentRaceId;
     },
     firstRace(){
         return this.currentRaceId === 0;
@@ -266,8 +271,8 @@ export default {
         }
         this.toHome();
     },
-    submitRaceScore(){
-        console.log("Sending score for race" + this.currentRaceId)
+    async submitRaceScore(){
+        await updateScore(this.scheduleId, this.racersId, this.currentRaceId, this.Scorers.schedule[this.currentRaceId]);
     },
   },
 };

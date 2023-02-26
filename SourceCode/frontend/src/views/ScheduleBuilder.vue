@@ -156,6 +156,7 @@
 import { mapState } from "vuex";
 import router from "@/router/index.js";
 import {generateSchedule} from "../scheduleGenAlgo/generateSchedule"
+import { replaceSchedule } from "../firebase";
 export default {
   name: "ScheduleBuilder",
   components: {
@@ -218,6 +219,7 @@ export default {
       await this.$store.dispatch("updateAllRacers",{racersId:this.racersId, newList:this.racers, removedRacers:this.removedRacers});
     },
     async createSchedule(){
+      this.saveRacers()
       let racerIds = this.racers.map(racer => racer.id);
       if((new Set(racerIds)).size != racerIds.length){
         alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
@@ -225,6 +227,8 @@ export default {
       }
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
+      replaceSchedule(this.scheduleId,scheduleObject.schedule,this.racersId)
+      //this.toHome();
     },
   },
 };
