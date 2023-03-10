@@ -43,6 +43,9 @@
           label="Email">
 
           </v-text-field>
+          <br/>
+          <span class="_red">{{errorMessage}}</span>
+          <br/>
           <v-btn
             block
             color="primary"
@@ -74,6 +77,8 @@
             :disabled="!valid">
             Register
           </v-btn>
+          <br/>
+          <a @click="switchToLogin">Back to login</a>
         </div>
       </v-form>
         
@@ -103,6 +108,7 @@ export default {
     methods:{
       switchToRegister(){
         this.loginForm="register"
+        this.errorMessage=""
       },
       async register(){
         try{
@@ -113,10 +119,12 @@ export default {
           });
         } catch(error){
           console.log(error.message);
+          this.errorMessage="User with this email already exists"
         }
       },
       switchToLogin(){
         this.loginForm="login"
+        this.errorMessage=""
       },
       async login(){
         try{
@@ -133,6 +141,7 @@ export default {
       },
       switchToForgotPassword(){
         this.loginForm="forgotPassword";
+        this.errorMessage=""
       },
       async forgotPassword(){
         try{
@@ -140,6 +149,7 @@ export default {
 
         } catch(error){
           console.log(error.message);
+          this.errorMessage="User with this email does not exist."
         }
         
       },
