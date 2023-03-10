@@ -112,7 +112,7 @@
                                 {{racersMap.get(currentRaceRacers[3]).id}}
                             </v-col>
                             <v-col v-else>
-                                Empty Lane
+                                Empty
                             </v-col>
                         </v-row>
                     </v-card>

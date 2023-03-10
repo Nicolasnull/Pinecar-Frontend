@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, getDoc,  writeBatch, doc, runTransaction } from "firebase/firestore";
-
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword } from "firebase/auth";
 const config= {
     apiKey: "AIzaSyC7nygfHugm6ynTHRcNM3XSxmtXy85wrg0",
     authDomain: "pine-care-derby.firebaseapp.com",
@@ -149,4 +149,17 @@ export async function updateScore(scheduleId, racerListId, raceIndex, newRaceInf
         alert("Scores not updated!!!");
     }
     
+}
+export const auth = getAuth();
+
+export async function loginWithEmailAndPassword(auth, email, password){
+    return (await signInWithEmailAndPassword(auth, email, password)).user;
+}
+
+export async function forgotPasswordEmail(auth, email){
+    await sendPasswordResetEmail(auth,email);
+}
+
+export async function createUser(auth,email,password){
+    return (await createUserWithEmailAndPassword(auth, email, password)).user
 }

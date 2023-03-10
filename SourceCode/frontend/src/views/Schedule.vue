@@ -50,7 +50,7 @@
                     <v-card
                         color="yellow"    
                     >
-                        <div v-if="race.length < 4">
+                        <div v-if="race.racerIds.length < 4">
                             Empty Lane
                         </div>
                         <div v-else>

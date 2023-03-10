@@ -28,10 +28,18 @@
       <v-row>
         <v-col>
           <v-card
+            v-if="currentRaceRacers.length > 3"
             color="yellow"
             class="my-card"
           >
-            {{ racersMap.get(currentRaceRacers[0]).id }}
+            {{ racersMap.get(currentRaceRacers[3]).id }}
+          </v-card>
+          <v-card
+            v-else
+            color="yellow"
+            class="my-card"
+          >
+            Empty
           </v-card>
         </v-col>
         <v-col>
@@ -39,7 +47,7 @@
             color="green"
             class="my-card"
           >
-            {{ racersMap.get(currentRaceRacers[1]).id }}
+            {{ racersMap.get(currentRaceRacers[2]).id }}
           </v-card>
         </v-col>
         <v-col>
@@ -47,7 +55,7 @@
             color="blue"
             class="my-card"
           >
-            {{ racersMap.get(currentRaceRacers[2]).id }}
+            {{ racersMap.get(currentRaceRacers[1]).id }}
           </v-card>
         </v-col>
         <v-col>
@@ -55,7 +63,7 @@
             color="red"
             class="my-card"
           >
-            {{ racersMap.get(currentRaceRacers[3]).id }}
+            {{ racersMap.get(currentRaceRacers[0]).id }}
           </v-card>
         </v-col>
       </v-row>
@@ -65,10 +73,18 @@
       <v-row v-if="currentRaceId<Scorers.schedule.length-1">
         <v-col>
           <v-card
+          v-if="nextRaceRacers.length > 3"
             color="yellow darken-2"
             class="my-card"
           >
-            {{ racersMap.get(nextRaceRacers[0]).id }}
+            {{ racersMap.get(nextRaceRacers[3]).id }}
+          </v-card>
+          <v-card
+          v-else
+            color="yellow darken-2"
+            class="my-card"
+          >
+            Empty
           </v-card>
         </v-col>
         <v-col>
@@ -76,7 +92,7 @@
             color="green darken-2"
             class="my-card"
           >
-            {{ racersMap.get(nextRaceRacers[1]).id }}
+            {{ racersMap.get(nextRaceRacers[2]).id }}
           </v-card>
         </v-col>
         <v-col>
@@ -84,7 +100,7 @@
             color="blue darken-2"
             class="my-card"
           >
-            {{ racersMap.get(nextRaceRacers[2]).id }}
+            {{ racersMap.get(nextRaceRacers[1]).id }}
           </v-card>
         </v-col>
         <v-col>
@@ -92,7 +108,7 @@
             color="red darken-2"
             class="my-card"
           >
-            {{ racersMap.get(nextRaceRacers[3]).id }}
+            {{ racersMap.get(nextRaceRacers[0]).id }}
           </v-card>
         </v-col>
       </v-row>
