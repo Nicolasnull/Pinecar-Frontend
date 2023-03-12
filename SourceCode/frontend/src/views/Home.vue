@@ -6,14 +6,18 @@
     <v-btn v-on:click="toDad">Dad</v-btn>
     <v-btn v-on:click="toSchedule">Schedule</v-btn>
     <v-btn v-on:click="toLogin">Login</v-btn>
+    <v-btn v-on:click="logout">Log out</v-btn>
   </div>
 </template>
 
 <script>
 import router from "@/router/index.js";
+import { logOut } from "../firebase";
 export default {
   name: "Home",
-  components: {},
+  components: {
+    
+  },
   methods: {
     toScoreBoard() {
       router.push({
@@ -45,6 +49,9 @@ export default {
         path: "/login",
       });
     },
+    logout(){
+      logOut();
+    }
   },
 };
 </script>

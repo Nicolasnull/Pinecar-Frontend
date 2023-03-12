@@ -162,7 +162,7 @@ export default {
   components: {
   },
   computed:{
-    ...mapState(["racersId", "scheduleId", "racers"])
+    ...mapState(["racersId", "scheduleId", "racers", "scheduleName","user"])
   },
   data: ()=> ({
     numRacesRules: [
@@ -181,7 +181,7 @@ export default {
     removedRacers: [],
   }),
   async created() {
-    await this.$store.dispatch("getAllRacers",{racersId:this.racersId});
+    await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
     this.sortRacersById();
   },
   methods: {
@@ -216,7 +216,7 @@ export default {
         alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
         return;
       }
-      await this.$store.dispatch("updateAllRacers",{racersId:this.racersId, newList:this.racers, removedRacers:this.removedRacers});
+      await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.scheduleName, newRacerList:this.racers, removedRacers: this.removedRacers});
     },
     async createSchedule(){
       this.saveRacers()
@@ -227,7 +227,7 @@ export default {
       }
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
-      replaceSchedule(this.scheduleId,scheduleObject.schedule,this.racersId)
+      replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
       //this.toHome();
     },
   },

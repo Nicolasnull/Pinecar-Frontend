@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import {auth, loginWithEmailAndPassword, forgotPasswordEmail, createUser} from "../firebase"
+import {loginWithEmailAndPassword, forgotPasswordEmail, createUser} from "../firebase"
 import router from "../router";
 export default {
     name: "Login",
@@ -112,7 +112,7 @@ export default {
       },
       async register(){
         try{
-          const user = await createUser(auth,this.email,this.password);
+          const user = await createUser(this.email,this.password);
           console.log(user.uid);
           router.push({
             path: "/",
@@ -128,7 +128,7 @@ export default {
       },
       async login(){
         try{
-          const user = await loginWithEmailAndPassword(auth, this.email, this.password);
+          const user = await loginWithEmailAndPassword(this.email, this.password);
           this.errorMessage="";
           console.log(user.uid)
           router.push({
@@ -145,7 +145,7 @@ export default {
       },
       async forgotPassword(){
         try{
-          console.log(await forgotPasswordEmail(auth, this.email));
+          console.log(await forgotPasswordEmail(this.email));
 
         } catch(error){
           console.log(error.message);

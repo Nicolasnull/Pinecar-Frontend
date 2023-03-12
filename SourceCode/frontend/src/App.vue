@@ -1,8 +1,32 @@
 <template>
   <div id="app">
-    <router-view />
+    <v-app>
+      <LoggedInNavbar v-if="user!==''"/>
+      <LoggedOutNavbar v-else/>   
+      <router-view />
+      </v-app>
   </div>
 </template>
+
+<script>
+import LoggedInNavbar from '@/components/LoggedInNavbar.vue';
+import LoggedOutNavbar from '@/components/LoggedOutNavbar.vue';
+import { mapState } from 'vuex';
+  export default {
+    name: "App",
+    components: {
+      LoggedInNavbar,
+      LoggedOutNavbar,
+    },
+    async created(){
+      await this.$store.dispatch("subscribeToUser");
+      console.log(this.user)
+    },
+    computed: {
+    ...mapState(["user"]),
+  },
+  }
+</script>
 
 <style>
 #app {

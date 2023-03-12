@@ -7,3 +7,4 @@ schedule.csv
 *.pyc
 frontend/node_modules/*
 ~WRL0005.tmp
+~WRL3886.tmp

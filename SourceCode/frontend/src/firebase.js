@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, getDoc,  writeBatch, doc, runTransaction } from "firebase/firestore";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 const config= {
     apiKey: "AIzaSyC7nygfHugm6ynTHRcNM3XSxmtXy85wrg0",
     authDomain: "pine-care-derby.firebaseapp.com",
@@ -63,15 +63,13 @@ export async function getAllRacers(racersId){
 
 /* ---Schedule--- */
 // Create 
-export async function replaceSchedule(scheduleId, schedule, racerList){
-    let originalSchedule = await getScheduleRaces(scheduleId);
+//export async function replaceSchedule(scheduleId, schedule, racerList){
+export async function replaceSchedule(userId, scheduleName, schedule){
+    let originalSchedule = await getScheduleRaces(userId, scheduleName);
     const batch = writeBatch(db);
-    let racerListRef = doc(db,"MasterSchedules",scheduleId);
-    batch.set(racerListRef, {RacerList: racerList, Name: "OG Test Race"})
-
     // delete old schedule
     originalSchedule.forEach((race) =>{
-        let myRef = doc(db, "MasterSchedules", scheduleId, "Races", race.dbId);
+        let myRef = doc(db, "Users", userId, "MasterSchedules", scheduleName, "Schedule", race.dbId);
         batch.delete(myRef);
     });
 
@@ -83,7 +81,7 @@ export async function replaceSchedule(scheduleId, schedule, racerList){
         // second parameter in doc is the id that we are going to use
         // leaving it blank will create an auto generated id
         // since we want to keep the races in the correct order, we are going to use the counter
-        let myNewRef = doc(collection(db, "MasterSchedules", scheduleId, "Races"),("" + counter));
+        let myNewRef = doc(collection(db, "Users", userId, "MasterSchedules", scheduleName, "Schedule"),padId(counter));
         let racerScores = [];
         race.forEach(() =>
         {
@@ -91,28 +89,36 @@ export async function replaceSchedule(scheduleId, schedule, racerList){
         });    
         batch.set(myNewRef, { racerIds: race, racerScores: racerScores});
     });
+    
     await batch.commit();
 }
+function padId(intId){
+    let stringId = ""+intId;
+    while(stringId.length<5){
+        stringId="0"+stringId
+    }
+    return stringId;
+}
 
-export async function getScheduleRaces(scheduleId){
-    const query = await getDocs(collection(db, "MasterSchedules", scheduleId, "Races"));
+export async function getScheduleRaces(userId, scheduleName){
     let schedule = [];
-    query.forEach((doc)=> {
-        let race = doc.data();
-        race.dbId = doc.id;
-        schedule.push(race);
-    });
+    try{
+        const query = await getDocs(collection(db, "Users", userId, "MasterSchedules", scheduleName, "Schedule"));
+    
+        query.forEach((doc)=> {
+            let race = doc.data();
+            race.dbId = doc.id;
+            schedule.push(race);
+        });
+    } catch(e){
+        console.log("No schedule");
+    }
     return schedule;
 }
-export async function getScheduleNameAndRacerList(scheduleId){
-    let docRef = doc(db,"MasterSchedules",scheduleId);
-    let returnObject = (await getDoc(docRef)).data();
-    return {Name: returnObject.Name, RacerList: returnObject.RacerList}
-}
 
-export async function updateScore(scheduleId, racerListId, raceIndex, newRaceInfo){
+export async function updateScore(userId, scheduleName, raceIndex, newRaceInfo){
     // get old race info
-    let oldRaceInfo = (await getScheduleRaces(scheduleId))[raceIndex];
+    let oldRaceInfo = (await getScheduleRaces(userId, scheduleName))[raceIndex];
     
     // calculate delta
     let delta = [];
@@ -130,7 +136,7 @@ export async function updateScore(scheduleId, racerListId, raceIndex, newRaceInf
             // update Racer Scores
             for(let i = 0; i < newRaceInfo.racerIds.length; i++){
                 let racer = newRaceInfo.racerIds[i];
-                let racerRef = doc(db, "MasterRacers", racerListId, "Racers", racer); 
+                let racerRef = doc(db, "Users", userId, "MasterSchedules", scheduleName, "Racers", racer); 
                 let newScore = await (await transaction.get(racerRef)).data().score+delta[i];
                 racerRefs.push(racerRef);
                 newScores.push(newScore);
@@ -140,7 +146,7 @@ export async function updateScore(scheduleId, racerListId, raceIndex, newRaceInf
             }
             
             // update Schedule scores
-            let scheduleRef = doc(db, "MasterSchedules", scheduleId, "Races", ""+(raceIndex+1)); 
+            let scheduleRef = doc(db, "Users", userId, "MasterSchedules", scheduleName, "Schedule", ""+padId(raceIndex+1)); 
             transaction.update(scheduleRef, {racerScores: newRaceInfo.racerScores});
         });
     }
@@ -152,14 +158,25 @@ export async function updateScore(scheduleId, racerListId, raceIndex, newRaceInf
 }
 export const auth = getAuth();
 
-export async function loginWithEmailAndPassword(auth, email, password){
+export async function loginWithEmailAndPassword(email, password){
+    await setPersistence(auth, browserSessionPersistence);
     return (await signInWithEmailAndPassword(auth, email, password)).user;
 }
 
-export async function forgotPasswordEmail(auth, email){
+export async function forgotPasswordEmail(email){
     await sendPasswordResetEmail(auth,email);
 }
 
-export async function createUser(auth,email,password){
-    return (await createUserWithEmailAndPassword(auth, email, password)).user
+export async function createUser(email,password){
+    return (await createUserWithEmailAndPassword(email, password)).user
+}
+export async function logOut(){
+    if(auth.user!==""){
+        await signOut(auth);
+    }
+}
+
+export async function nicTest(){
+    let butts = await getDoc(doc(db,"Users","Test1"));
+    console.log(butts.data());
 }

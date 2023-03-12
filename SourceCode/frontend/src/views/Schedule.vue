@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <v-card>
         <v-row>
             <v-col>
@@ -61,7 +61,7 @@
             </v-row>
         </v-card>
     </v-card>
-  </v-app>
+    </div>  
 </template>
 
 <script>
@@ -76,11 +76,11 @@ export default {
         rendered: false,
     }),
     computed: {
-        ...mapState(["scheduleId", "Scorers", "racersId", "racersMap"]),
+        ...mapState(["scheduleId", "Scorers", "racersId", "racersMap","user", "scheduleName"]),
     },
     async created(){
-        await this.$store.dispatch("getFullSchedule", {scheduleId: this.scheduleId});
-        await this.$store.dispatch("getAllRacers", {racersId: this.racersId});
+        await this.$store.dispatch("getFullSchedule", {userId: this.user, scheduleId: this.scheduleName});
+        await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
         this.rendered=true;
     },
     methods: {

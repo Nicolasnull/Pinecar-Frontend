@@ -144,7 +144,7 @@ import { mapState } from "vuex";
 export default {
   name: "Dad",
   computed: {
-    ...mapState(["Scorers", "scheduleId","racersId", "racersMap"]),
+    ...mapState(["Scorers", "scheduleId","racersId", "racersMap","user","scheduleName"]),
   },
   data: () => ({
     schedule: [],
@@ -155,8 +155,8 @@ export default {
   }),
   async created() {
     window.scrollTo(0, 0);
-    await this.$store.dispatch("getFullSchedule", {scheduleId: this.scheduleId});
-    await this.$store.dispatch("getAllRacers", {racersId: this.racersId});
+    await this.$store.dispatch("getFullSchedule", {userId: this.user, scheduleId: this.scheduleName});
+    await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
     this.currentRaceId = 0;
     this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
     this.nextRaceRacers = this.Scorers.schedule[this.currentRaceId+1].racerIds;

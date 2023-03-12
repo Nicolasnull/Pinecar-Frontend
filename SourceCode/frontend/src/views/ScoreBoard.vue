@@ -63,11 +63,12 @@ import { mapState } from "vuex";
 export default {
   name: "ScoreBoard",
   computed: {
-    ...mapState(["ScoreBoard","racersId"])
+    ...mapState(["ScoreBoard","racersId","user","scheduleName"])
   },
   async created(){
     window.scrollTo(0, 0);
-    await this.$store.dispatch("subscribeToScoreBoard", {racerListId: this.racersId});
+    await this.$store.dispatch("subscribeToScoreBoard", {userId: this.user, scheduleName: this.scheduleName});
+    console.log(this.ScoreBoard)
   },  
   methods: {
     toHome() {
