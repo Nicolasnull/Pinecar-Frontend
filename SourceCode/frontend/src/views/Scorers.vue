@@ -1,28 +1,7 @@
 <template>
     <v-app>
-        <br>
-        <v-card elevation="5">
-            <v-row>
-                <v-col cols="8">
-                    <h1>
-                        Scorers
-                    </h1> 
-                </v-col>
-                <v-col cols="2">
-                    <v-btn 
-                        v-on:click="toHome"
-                        fab
-                        text
-                        color="grey darken-2"
-                    >
-                        <v-icon large>
-                                mdi-home
-                        </v-icon>
-                    </v-btn>
-                </v-col>
-            </v-row>
-        </v-card>
-    
+        <br />
+        <ChooseName @change_name_event="loadPage()" />
         <br />
         <div>
             <v-card>
@@ -174,107 +153,113 @@
 import { mapState } from "vuex";
 import router from "../router";
 import {updateScore} from "../firebase"
+import ChooseName from "../components/ChooseName.vue";
 export default {
-  name: "Scorers",
-  data: () => ({
-    currentRaceId: null,
-    currentRaceRacers: [],
-    currentRaceScores: [],
-    currentRaceAlreadyScored:false,
-    renderButton: true,
-    render: false,
-  }),
-  computed: {
-    ...mapState(["Scorers", "scheduleId", "racersId", "racers", "racersMap","scheduleName", "user"]),
-  },
-  async created() {
-    window.scrollTo(0, 0);
-    await this.$store.dispatch("getFullSchedule",{userId: this.user, scheduleId: this.scheduleName});
-    await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
-    this.currentRaceId = 0;
-    this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
-    this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
-    this.render=true;
-  },
-  methods: {
-    toHome() {
-      router.push({
-        path: "/",
-      });
+    name: "Scorers",
+    data: () => ({
+        currentRaceId: null,
+        currentRaceRacers: [],
+        currentRaceScores: [],
+        currentRaceAlreadyScored: false,
+        renderButton: true,
+        render: false,
+    }),
+    computed: {
+        ...mapState(["Scorers", "scheduleId", "racersId", "racers", "racersMap", "scheduleName", "user"]),
     },
-    nextRace() {
-      if (this.currentRaceId < this.Scorers.schedule.length - 1) {
-        if(!this.currentRaceAlreadyScored){
-            this.submitRaceScore();
-        }
-        this.currentRaceId++;
-        this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
-        this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
-        if(this.allScored()){
-            this.currentRaceAlreadyScored=true
-        }
-        else{
-            this.currentRaceAlreadyScored=false
-        }
-      }
+    async created() {
+        await this.loadPage();
     },
-    previousRace() {
-      if (this.currentRaceId > 0) {
-        this.currentRaceId--;
-        this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
-        this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
-        this.currentRaceAlreadyScored=true
-      }
-    },
-    clearRace() {
-      for(let racer in this.currentRaceScores){
-        this.currentRaceScores[racer]=0;
-      }
-      this.renderButton=false;
-        this.$nextTick(() => {
-            this.renderButton=true;
-        })
-        this.currentRaceAlreadyScored=false
-    },
-    scoreLane(laneNumber){
-        if(this.currentRaceScores[laneNumber] > 0){
-            return;
-        }
-        let counter = 0;
-        for(let i = 0; i < this.currentRaceScores.length; i++){
-            if(this.currentRaceScores[i] > 0)
-                counter+=1;
-        }
-        this.currentRaceScores[laneNumber]=4-counter;
-        this.renderButton=false;
-        this.$nextTick(() => {
-            this.renderButton=true;
-        })
-    },
-    allScored(){
-        for(let score in this.currentRaceScores){
-            if(this.currentRaceScores[score] < 1){
-                return false;
+    methods: {
+        async loadPage(){
+            window.scrollTo(0, 0);
+            this.render = false;
+            await this.$store.dispatch("getFullSchedule", { userId: this.user, scheduleId: this.scheduleName });
+            await this.$store.dispatch("getAllRacers", { userId: this.user, scheduleName: this.scheduleName });
+            this.currentRaceId = 0;
+            this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+            this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
+            this.render = true;
+        },
+        toHome() {
+            router.push({
+                path: "/",
+            });
+        },
+        nextRace() {
+            if (this.currentRaceId < this.Scorers.schedule.length - 1) {
+                if (!this.currentRaceAlreadyScored) {
+                    this.submitRaceScore();
+                }
+                this.currentRaceId++;
+                this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+                this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
+                if (this.allScored()) {
+                    this.currentRaceAlreadyScored = true;
+                }
+                else {
+                    this.currentRaceAlreadyScored = false;
+                }
             }
-        }
-        return true;
+        },
+        previousRace() {
+            if (this.currentRaceId > 0) {
+                this.currentRaceId--;
+                this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+                this.currentRaceScores = this.Scorers.schedule[this.currentRaceId].racerScores;
+                this.currentRaceAlreadyScored = true;
+            }
+        },
+        clearRace() {
+            for (let racer in this.currentRaceScores) {
+                this.currentRaceScores[racer] = 0;
+            }
+            this.renderButton = false;
+            this.$nextTick(() => {
+                this.renderButton = true;
+            });
+            this.currentRaceAlreadyScored = false;
+        },
+        scoreLane(laneNumber) {
+            if (this.currentRaceScores[laneNumber] > 0) {
+                return;
+            }
+            let counter = 0;
+            for (let i = 0; i < this.currentRaceScores.length; i++) {
+                if (this.currentRaceScores[i] > 0)
+                    counter += 1;
+            }
+            this.currentRaceScores[laneNumber] = 4 - counter;
+            this.renderButton = false;
+            this.$nextTick(() => {
+                this.renderButton = true;
+            });
+        },
+        allScored() {
+            for (let score in this.currentRaceScores) {
+                if (this.currentRaceScores[score] < 1) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        lastRace() {
+            return this.Scorers.schedule.length - 1 === this.currentRaceId;
+        },
+        firstRace() {
+            return this.currentRaceId === 0;
+        },
+        finish() {
+            if (!this.currentRaceAlreadyScored) {
+                this.submitRaceScore();
+            }
+            this.toHome();
+        },
+        async submitRaceScore() {
+            await updateScore(this.user, this.scheduleName, this.currentRaceId, this.Scorers.schedule[this.currentRaceId]);
+        },
     },
-    lastRace(){
-        return this.Scorers.schedule.length-1 === this.currentRaceId;
-    },
-    firstRace(){
-        return this.currentRaceId === 0;
-    },
-    finish(){
-        if(!this.currentRaceAlreadyScored){
-            this.submitRaceScore();
-        }
-        this.toHome();
-    },
-    async submitRaceScore(){
-        await updateScore(this.user, this.scheduleName, this.currentRaceId, this.Scorers.schedule[this.currentRaceId]);
-    },
-  },
+    components: { ChooseName }
 };
 </script>
 

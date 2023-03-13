@@ -12,7 +12,7 @@ export default new Vuex.Store({
     user: "",
     racersId: "QoBZZcESsl3PAx18uiYG",
     scheduleId: "KoLRW4tXu4t0pXgneD73",
-    scheduleName: "k4t 1",
+    scheduleName: "",
     allScheduleNames: [],
 
     // Schedule
@@ -131,10 +131,10 @@ export default new Vuex.Store({
       });
     },
     async subscribeToUser({commit}){
-      onAuthStateChanged(auth, async (user) => {
+      onAuthStateChanged(auth, (user) => {
         if (user) {
-          commit("updateUser",{user: auth.currentUser.uid});
-          console.log("Auth State Changed", auth.currentUser.uid);
+          commit("updateUser",{user: user.uid});
+          console.log("Auth State Changed", user.uid);
         } else {
           commit("updateUser",{user:""});
           console.log("Auth State Changed. No user");

@@ -1,25 +1,7 @@
 <template>
   <v-app>
     <br>
-    <v-card elevation="5">
-      <v-row>
-        <v-col>
-          <h1>Score Board</h1> 
-        </v-col>
-        <v-col>
-          <v-btn 
-            v-on:click="toHome"
-            fab
-            text
-            color="grey darken-2"
-          >
-            <v-icon large>
-              mdi-home
-            </v-icon>
-        </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
+    <ChooseName @change_name_event="loadPageData()" />
     <br>
     <v-card>
       <v-row>
@@ -60,23 +42,27 @@
 <script>
 import router from "@/router/index.js";
 import { mapState } from "vuex";
+import ChooseName from "../components/ChooseName.vue";
 export default {
-  name: "ScoreBoard",
-  computed: {
-    ...mapState(["ScoreBoard","racersId","user","scheduleName"])
-  },
-  async created(){
-    window.scrollTo(0, 0);
-    await this.$store.dispatch("subscribeToScoreBoard", {userId: this.user, scheduleName: this.scheduleName});
-    console.log(this.ScoreBoard)
-  },  
-  methods: {
-    toHome() {
-      router.push({
-        path: "/",
-      });
+    name: "ScoreBoard",
+    computed: {
+        ...mapState(["ScoreBoard", "racersId", "user", "scheduleName"])
     },
-  },
+    created() {
+        this.loadPageData();
+    },
+    methods: {
+        async loadPageData() {
+            window.scrollTo(0, 0);
+            await this.$store.dispatch("subscribeToScoreBoard", { userId: this.user, scheduleName: this.scheduleName });
+        },
+        toHome() {
+            router.push({
+                path: "/",
+            });
+        },
+    },
+    components: { ChooseName }
 };
 </script>
 

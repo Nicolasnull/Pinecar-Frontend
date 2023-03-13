@@ -1,26 +1,28 @@
 <template>
-  <v-app>
-    <v-card>
-      <v-row>
-        <v-col>
-          <h1>Schedule Builder</h1>
-        </v-col>
-        <v-col>
-          <v-btn 
-            v-on:click="toHome"
-            fab
-            text
-            color="grey darken-2"
-          >
-            <v-icon large>
-              mdi-home
-            </v-icon>
-        </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
-
+  <div>
     <br>
+    <v-row>
+      <v-col>
+        <v-select
+        :items="['Update Existing Schedule','Create New']"
+        v-model="scheduleType"
+        @change="clearScreenData"
+        >
+      </v-select>
+      </v-col>
+      <v-col v-if="scheduleType==='Update Existing Schedule'">
+        <choose-name @change_name_event="nameChange"/>
+      </v-col>
+      <v-col v-else>
+        <v-text-field
+        v-model="newName"
+        label="New Schedule Name"
+        >
+
+        </v-text-field>
+      </v-col>
+    </v-row>
+    
     <v-form v-model="valid">
       <v-card 
         class="my-card"
@@ -149,20 +151,21 @@
         </v-row>
       </v-card>
     </v-form>
-  </v-app>
+  </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import router from "@/router/index.js";
 import {generateSchedule} from "../scheduleGenAlgo/generateSchedule"
-import { replaceSchedule } from "../firebase";
+import { replaceSchedule, addScheduleName } from "../firebase";
+import ChooseName from '../components/ChooseName.vue';
 export default {
   name: "ScheduleBuilder",
   components: {
+    ChooseName,
   },
   computed:{
-    ...mapState(["racersId", "scheduleId", "racers", "scheduleName","user"])
+    ...mapState(["racersId", "scheduleId", "racers", "scheduleName","user","allScheduleNames"])
   },
   data: ()=> ({
     numRacesRules: [
@@ -179,17 +182,13 @@ export default {
     valid: false,
     numRaces: "",
     removedRacers: [],
+    scheduleType: "Update Existing Schedule",
+    newName: "",
   }),
   async created() {
-    await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
-    this.sortRacersById();
+    this.loadScreenData()
   },
   methods: {
-    toHome() {
-      router.push({
-        path: "/",
-      });
-    },
     addRacer(){
       this.racers.push({dbId: undefined, id: "", name: "", score: 0});
     },
@@ -216,7 +215,14 @@ export default {
         alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
         return;
       }
-      await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.scheduleName, newRacerList:this.racers, removedRacers: this.removedRacers});
+      if(this.scheduleType==="Update Existing Schedule"){
+        await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.scheduleName, newRacerList:this.racers, removedRacers: this.removedRacers});
+      }
+      else if(this.newName!==""){
+        await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.newName, newRacerList:this.racers, removedRacers: this.removedRacers});
+        addScheduleName(this.user, this.newName, this.allScheduleNames);
+      }
+      
     },
     async createSchedule(){
       this.saveRacers()
@@ -227,8 +233,28 @@ export default {
       }
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
-      replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
+      if(this.scheduleType==="Update Existing Schedule"){
+        replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
+      }
+      else if(this.newName!=="")
+      {
+        replaceSchedule(this.user, this.newName, scheduleObject.schedule)
+        addScheduleName(this.user, this.newName, this.allScheduleNames);
+      }
       //this.toHome();
+    },
+    nameChange(){
+      this.loadScreenData()
+    },
+    async loadScreenData(){
+      if(this.scheduleType==="Create New") this.clearScreenData();
+      await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
+      this.sortRacersById();
+    },
+    clearScreenData(){
+      this.removedRacers=[];
+      this.$store.commit("updateScheduleName",{name: ""});
+      this.$store.commit("updateRacers",{racersArr: [], racersMap: new Map()});
     },
   },
 };

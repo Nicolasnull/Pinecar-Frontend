@@ -1,24 +1,8 @@
 <template>
   <div>
-    <v-card>
-        <v-row>
-            <v-col>
-                Schedule
-            </v-col>
-            <v-col>
-                <v-btn 
-                    v-on:click="toHome"
-                    fab
-                    text
-                    color="grey darken-2"
-                >
-                    <v-icon large>
-                    mdi-home
-                    </v-icon>
-                </v-btn>
-            </v-col>
-        </v-row>
-    </v-card>
+    <br>
+    <ChooseName @change_name_event="loadPageData()" />
+    <br>
     <v-card v-if="rendered">
         <v-card v-for="(race, index) in Scorers.schedule" :key="index">
             <v-row>
@@ -67,11 +51,12 @@
 <script>
 import router from "@/router/index.js";
 import { mapState } from "vuex";
+import ChooseName from "../components/ChooseName.vue";
 export default {
     name: "Schedule",
     components:{
-
-    },
+    ChooseName
+},
     data: ()=>({
         rendered: false,
     }),
@@ -79,11 +64,15 @@ export default {
         ...mapState(["scheduleId", "Scorers", "racersId", "racersMap","user", "scheduleName"]),
     },
     async created(){
-        await this.$store.dispatch("getFullSchedule", {userId: this.user, scheduleId: this.scheduleName});
-        await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
-        this.rendered=true;
+        this.loadPageData();
     },
     methods: {
+        async loadPageData(){
+            this.rendered=false;
+            await this.$store.dispatch("getFullSchedule", {userId: this.user, scheduleId: this.scheduleName});
+            await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
+            this.rendered=true;
+        },
         toHome() {
             router.push({
                 path: "/",

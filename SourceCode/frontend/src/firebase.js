@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, getDoc,  writeBatch, doc, runTransaction } from "firebase/firestore";
+import { getFirestore, collection, getDocs, setDoc, writeBatch, doc, runTransaction } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 const config= {
     apiKey: "AIzaSyC7nygfHugm6ynTHRcNM3XSxmtXy85wrg0",
@@ -176,7 +176,8 @@ export async function logOut(){
     }
 }
 
-export async function nicTest(){
-    let butts = await getDoc(doc(db,"Users","Test1"));
-    console.log(butts.data());
+export async function addScheduleName(userId, newName, namesArr){
+    namesArr.push(newName);
+    console.log("HERERSAEKJGZSJKDHFGASDFJKHAGSKDJH", namesArr);
+    await setDoc(doc(db,"Users", userId), {Names: namesArr});
 }

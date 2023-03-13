@@ -1,9 +1,10 @@
 <template>
-<v-card data-app class="onTopOfEverything">
+<v-card data-app>
     <v-select
     label="Name of Schedule"
     :items="allScheduleNames"
     v-model="scheduleName"
+    @change="nameChanged"
     >
     </v-select>
 </v-card>
@@ -25,18 +26,17 @@ export default {
         }
     },
     async created(){
-        console.log("HEYO", this.scheduleName)
         await this.$store.dispatch("getAllScheduleNames");
         this.loaded=true;
     },
     methods: {
-
+        nameChanged(){
+            this.$emit("change_name_event");
+        }
     },
 }
 </script>
 
 <style>
-.onTopOfEverything{
-  z-index: 99;
-}
+
 </style>

@@ -1,25 +1,7 @@
 <template>
   <v-app>
-    <v-card>
-      <v-row>
-        <v-col>
-          <h1>Dad's Screen</h1>
-        </v-col>
-        <v-col>
-          <v-btn 
-            v-on:click="toHome"
-            fab
-            text
-            color="grey darken-2"
-          >
-            <v-icon large>
-              mdi-home
-            </v-icon>
-        </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
-
+    <br />
+    <ChooseName @change_name_event="loadPageData()" />
     <br>
     <div v-if="rendered">
       <div class="label">
@@ -141,52 +123,60 @@
 <script>
 import router from "@/router/index.js";
 import { mapState } from "vuex";
+import ChooseName from "../components/ChooseName.vue";
 export default {
-  name: "Dad",
-  computed: {
-    ...mapState(["Scorers", "scheduleId","racersId", "racersMap","user","scheduleName"]),
-  },
-  data: () => ({
-    schedule: [],
-    currentRaceId: 0,
-    currentRaceRacers: [],
-    nextRaceRacers: [],
-    rendered: false,
-  }),
-  async created() {
-    window.scrollTo(0, 0);
-    await this.$store.dispatch("getFullSchedule", {userId: this.user, scheduleId: this.scheduleName});
-    await this.$store.dispatch("getAllRacers", {userId: this.user, scheduleName: this.scheduleName});
-    this.currentRaceId = 0;
-    this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
-    this.nextRaceRacers = this.Scorers.schedule[this.currentRaceId+1].racerIds;
-    console.log(this.Scorers.schedule)
-    this.rendered=true;
-  },
-  methods: {
-    toHome() {
-      router.push({
-        path: "/",
-      });
+    name: "Dad",
+    computed: {
+        ...mapState(["Scorers", "scheduleId", "racersId", "racersMap", "user", "scheduleName"]),
     },
-    next(){
-      if(this.currentRaceId >= this.Scorers.schedule.length-1) return;
-      this.currentRaceId++;
-      this.currentRaceRacers=this.Scorers.schedule[this.currentRaceId].racerIds;
-      if(this.currentRaceId >= this.Scorers.schedule.length-1){
-        this.nextRaceRacers=[];
-      }
-      else{
-        this.nextRaceRacers=this.Scorers.schedule[this.currentRaceId+1].racerIds;
-      }
+    data: () => ({
+        schedule: [],
+        currentRaceId: 0,
+        currentRaceRacers: [],
+        nextRaceRacers: [],
+        rendered: false,
+    }),
+    async created() {
+        window.scrollTo(0, 0);
+        this.loadPageData();
     },
-    previous(){
-      if(this.currentRaceId <= 0) return;
-      this.currentRaceId--;
-      this.currentRaceRacers=this.Scorers.schedule[this.currentRaceId].racerIds;
-      this.nextRaceRacers=this.Scorers.schedule[this.currentRaceId+1].racerIds;
+    methods: {
+        async loadPageData() {
+            this.rendered = false;
+            await this.$store.dispatch("getFullSchedule", { userId: this.user, scheduleId: this.scheduleName });
+            await this.$store.dispatch("getAllRacers", { userId: this.user, scheduleName: this.scheduleName });
+            this.currentRaceId = 0;
+            this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+            this.nextRaceRacers = this.Scorers.schedule[this.currentRaceId + 1].racerIds;
+            console.log(this.Scorers.schedule);
+            this.rendered = true;
+        },
+        toHome() {
+            router.push({
+                path: "/",
+            });
+        },
+        next() {
+            if (this.currentRaceId >= this.Scorers.schedule.length - 1)
+                return;
+            this.currentRaceId++;
+            this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+            if (this.currentRaceId >= this.Scorers.schedule.length - 1) {
+                this.nextRaceRacers = [];
+            }
+            else {
+                this.nextRaceRacers = this.Scorers.schedule[this.currentRaceId + 1].racerIds;
+            }
+        },
+        previous() {
+            if (this.currentRaceId <= 0)
+                return;
+            this.currentRaceId--;
+            this.currentRaceRacers = this.Scorers.schedule[this.currentRaceId].racerIds;
+            this.nextRaceRacers = this.Scorers.schedule[this.currentRaceId + 1].racerIds;
+        },
     },
-  },
+    components: { ChooseName }
 };
 </script>
 
