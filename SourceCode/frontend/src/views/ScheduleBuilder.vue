@@ -222,10 +222,14 @@ export default {
         await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.newName, newRacerList:this.racers, removedRacers: this.removedRacers});
         addScheduleName(this.user, this.newName, this.allScheduleNames);
       }
+      // this will make sure the new racers have their dbID updated and not left as undefined
+        await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
+
       
     },
     async createSchedule(){
-      this.saveRacers()
+      await this.saveRacers()
+      console.log("Loaded new racers", this.racers)
       let racerIds = this.racers.map(racer => racer.id);
       if((new Set(racerIds)).size != racerIds.length){
         alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
@@ -234,14 +238,16 @@ export default {
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
       if(this.scheduleType==="Update Existing Schedule"){
-        replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
+        console.log("ABout to replace schedule");
+        await replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
+        console.log("Out of replace schedule");
       }
       else if(this.newName!=="")
       {
-        replaceSchedule(this.user, this.newName, scheduleObject.schedule)
+        await replaceSchedule(this.user, this.newName, scheduleObject.schedule)
         addScheduleName(this.user, this.newName, this.allScheduleNames);
       }
-      //this.toHome();
+      // show stats?
     },
     nameChange(){
       this.loadScreenData()

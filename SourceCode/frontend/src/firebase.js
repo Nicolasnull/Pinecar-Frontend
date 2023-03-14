@@ -68,6 +68,7 @@ export async function replaceSchedule(userId, scheduleName, schedule){
     let originalSchedule = await getScheduleRaces(userId, scheduleName);
     const batch = writeBatch(db);
     // delete old schedule
+    console.log("Inside Replace Schedule");
     originalSchedule.forEach((race) =>{
         let myRef = doc(db, "Users", userId, "MasterSchedules", scheduleName, "Schedule", race.dbId);
         batch.delete(myRef);
@@ -77,6 +78,7 @@ export async function replaceSchedule(userId, scheduleName, schedule){
     // Need to use counter for ID so Schedule saves in the correct order
     let counter = 0;
     schedule.forEach((race) =>{
+        console.log("Races", race)
         counter++;
         // second parameter in doc is the id that we are going to use
         // leaving it blank will create an auto generated id
@@ -87,6 +89,7 @@ export async function replaceSchedule(userId, scheduleName, schedule){
         {
             racerScores.push(0);
         });    
+        console.log(race);
         batch.set(myNewRef, { racerIds: race, racerScores: racerScores});
     });
     
@@ -177,7 +180,8 @@ export async function logOut(){
 }
 
 export async function addScheduleName(userId, newName, namesArr){
-    namesArr.push(newName);
-    console.log("HERERSAEKJGZSJKDHFGASDFJKHAGSKDJH", namesArr);
-    await setDoc(doc(db,"Users", userId), {Names: namesArr});
+    if(!namesArr.includes(newName)){
+        namesArr.push(newName);
+        await setDoc(doc(db,"Users", userId), {Names: namesArr});
+    } 
 }
