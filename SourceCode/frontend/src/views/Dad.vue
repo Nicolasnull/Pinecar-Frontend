@@ -3,7 +3,7 @@
     <br />
     <ChooseName @change_name_event="loadPageData()" />
     <br>
-    <div v-if="rendered">
+    <div v-if="rendered && scheduleName!==''">
       <div class="label">
         Current Race: {{ currentRaceId+1 }} / {{ Scorers.schedule.length }}
       </div>
@@ -138,7 +138,9 @@ export default {
     }),
     async created() {
         window.scrollTo(0, 0);
-        this.loadPageData();
+        if(this.scheduleName!==""){
+          this.loadPageData();
+        }
     },
     methods: {
         async loadPageData() {

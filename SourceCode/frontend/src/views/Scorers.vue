@@ -3,149 +3,152 @@
         <br />
         <ChooseName @change_name_event="loadPage()" />
         <br />
-        <div>
-            <v-card>
-                <h3>
-                    Race {{currentRaceId+1}} / {{Scorers.schedule.length}}
-                </h3>
-            </v-card>
-        </div>
-        <br>
+        <div v-if="scheduleName!==''">
+            <div>
+                <v-card>
+                    <h3>
+                        Race {{currentRaceId+1}} / {{Scorers.schedule.length}}
+                    </h3>
+                </v-card>
+            </div>
+            <br>
 
-        <div class="main-content" v-if="render">
-            <v-row>
-                <v-col cols="6">
-                    <v-card 
-                    v-if="renderButton"
-                    elevation="5" 
-                    :color="currentRaceScores[0] === 0 ? 'red' : 'red darken-4'"
-                    class="my-card"
-                    v-on:click="scoreLane(0)">
-                        <v-row>
-                            <v-col v-if="(currentRaceScores[0]>0)">
-                                <img v-if="(currentRaceScores[0]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[0]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[0]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
-                                <div v-if="(currentRaceScores[0]===1)">L</div>
-                            </v-col>
-                            <v-col>
-                                {{racersMap.get(currentRaceRacers[0]).id}}
-                            </v-col>
-                        </v-row>
-                    </v-card>
-                </v-col>
-                <v-col cols="6">
-                    <v-card elevation="5"
-                    v-if="renderButton" 
-                    :color="currentRaceScores[1] === 0 ? 'blue' : 'blue darken-4'"
-                    class="my-card"
-                    v-on:click="scoreLane(1)">
-                        <v-row>
-                            <v-col v-if="(currentRaceScores[1]>0)">
-                                <img v-if="(currentRaceScores[1]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[1]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[1]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
-                                <div v-if="(currentRaceScores[1]===1)">L</div>
-                            </v-col>
-                            <v-col>
-                                {{racersMap.get(currentRaceRacers[1]).id}}
-                            </v-col>
-                        </v-row>
-                    </v-card>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="6">
-                    <v-card elevation="5" 
-                    v-if="renderButton"
-                    :color="currentRaceScores[2] === 0 ? 'green' : 'green darken-4'"
-                    class="my-card"
-                    v-on:click="scoreLane(2)">
-                        <v-row>
-                            <v-col v-if="(currentRaceScores[2]>0)">
-                                <img v-if="(currentRaceScores[2]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[2]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[2]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
-                                <div v-if="(currentRaceScores[2]===1)">L</div>
-                            </v-col>
-                            <v-col>
-                                {{racersMap.get(currentRaceRacers[2]).id}}
-                            </v-col>
-                        </v-row>
-                    </v-card>
-                </v-col>
-                <v-col cols="6">
-                    <v-card elevation="5"
-                    v-if="renderButton"
-                    :color="currentRaceScores[3] === 0 ? 'yellow' : 'yellow darken-4'"
-                    class="my-card"
-                    v-on:click="scoreLane(3)">
-                        <v-row>
-                            <v-col v-if="(currentRaceScores[3]>0)">
-                                <img v-if="(currentRaceScores[3]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[3]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
-                                <img v-if="(currentRaceScores[3]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
-                                <div v-if="(currentRaceScores[3]===1)">L</div>
-                            </v-col>
-                            <v-col v-if="currentRaceRacers[3]">
-                                {{racersMap.get(currentRaceRacers[3]).id}}
-                            </v-col>
-                            <v-col v-else>
-                                Empty
-                            </v-col>
-                        </v-row>
-                    </v-card>
-                </v-col>
-            </v-row>
-            <br/>
-            <v-row>
-                <v-col cols="4">
-                    <v-btn 
-                        v-on:click="previousRace"
-                        fab
-                        v-if="!firstRace()">
-                        <v-icon large>
-                            mdi-arrow-left-drop-circle-outline
-                        </v-icon>
-                    </v-btn>
-                </v-col>
-                <v-col cols="4">
-                    <v-btn
-                        v-on:click="clearRace"
-                        fab
-                        text>
-                        <v-icon 
-                            large
-                            color="red">
-                            mdi-cancel
-                        </v-icon>
-                    </v-btn>
-                </v-col>
-                <v-col cols="4">
-                    <v-btn 
-                        v-on:click="finish()"
-                        fab
-                        v-if="allScored()&&lastRace()"
-                        >
-                        <v-icon large 
-                        v-if="lastRace()"
-                        color="green">
-                            mdi-check
-                        </v-icon>
-                    </v-btn>
-                    <v-btn 
-                        v-on:click="nextRace"
-                        fab
-                        v-if="(allScored()&&!lastRace())"
-                        >
-                        <v-icon large>
-                            mdi-arrow-right-drop-circle-outline
-                        </v-icon>
-                    </v-btn>
-                    
-                </v-col>
-            </v-row>
+            <div class="main-content" v-if="render">
+                <v-row>
+                    <v-col cols="6">
+                        <v-card 
+                        v-if="renderButton"
+                        elevation="5" 
+                        :color="currentRaceScores[0] === 0 ? 'red' : 'red darken-4'"
+                        class="my-card"
+                        v-on:click="scoreLane(0)">
+                            <v-row>
+                                <v-col v-if="(currentRaceScores[0]>0)">
+                                    <img v-if="(currentRaceScores[0]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[0]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[0]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                    <div v-if="(currentRaceScores[0]===1)">L</div>
+                                </v-col>
+                                <v-col>
+                                    {{racersMap.get(currentRaceRacers[0]).id}}
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-card elevation="5"
+                        v-if="renderButton" 
+                        :color="currentRaceScores[1] === 0 ? 'blue' : 'blue darken-4'"
+                        class="my-card"
+                        v-on:click="scoreLane(1)">
+                            <v-row>
+                                <v-col v-if="(currentRaceScores[1]>0)">
+                                    <img v-if="(currentRaceScores[1]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[1]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[1]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                    <div v-if="(currentRaceScores[1]===1)">L</div>
+                                </v-col>
+                                <v-col>
+                                    {{racersMap.get(currentRaceRacers[1]).id}}
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="6">
+                        <v-card elevation="5" 
+                        v-if="renderButton"
+                        :color="currentRaceScores[2] === 0 ? 'green' : 'green darken-4'"
+                        class="my-card"
+                        v-on:click="scoreLane(2)">
+                            <v-row>
+                                <v-col v-if="(currentRaceScores[2]>0)">
+                                    <img v-if="(currentRaceScores[2]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[2]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[2]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                    <div v-if="(currentRaceScores[2]===1)">L</div>
+                                </v-col>
+                                <v-col>
+                                    {{racersMap.get(currentRaceRacers[2]).id}}
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-card elevation="5"
+                        v-if="renderButton"
+                        :color="currentRaceScores[3] === 0 ? 'yellow' : 'yellow darken-4'"
+                        class="my-card"
+                        v-on:click="scoreLane(3)">
+                            <v-row>
+                                <v-col v-if="(currentRaceScores[3]>0)">
+                                    <img v-if="(currentRaceScores[3]===4)" src="@/assets/Gold-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[3]===3)" src="@/assets/Silver-Medal.png" alt="gold medal" width="40px" />
+                                    <img v-if="(currentRaceScores[3]===2)" src="@/assets/Bronze-Medal.png" alt="gold medal" width="40px" />
+                                    <div v-if="(currentRaceScores[3]===1)">L</div>
+                                </v-col>
+                                <v-col v-if="currentRaceRacers[3]">
+                                    {{racersMap.get(currentRaceRacers[3]).id}}
+                                </v-col>
+                                <v-col v-else>
+                                    Empty
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <br/>
+                <v-row>
+                    <v-col cols="4">
+                        <v-btn 
+                            v-on:click="previousRace"
+                            fab
+                            v-if="!firstRace()">
+                            <v-icon large>
+                                mdi-arrow-left-drop-circle-outline
+                            </v-icon>
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-btn
+                            v-on:click="clearRace"
+                            fab
+                            text>
+                            <v-icon 
+                                large
+                                color="red">
+                                mdi-cancel
+                            </v-icon>
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-btn 
+                            v-on:click="finish()"
+                            fab
+                            v-if="allScored()&&lastRace()"
+                            >
+                            <v-icon large 
+                            v-if="lastRace()"
+                            color="green">
+                                mdi-check
+                            </v-icon>
+                        </v-btn>
+                        <v-btn 
+                            v-on:click="nextRace"
+                            fab
+                            v-if="(allScored()&&!lastRace())"
+                            >
+                            <v-icon large>
+                                mdi-arrow-right-drop-circle-outline
+                            </v-icon>
+                        </v-btn>
+                        
+                    </v-col>
+                </v-row>
+            </div>
         </div>
+        
     </v-app>
 </template>
 
@@ -168,7 +171,9 @@ export default {
         ...mapState(["Scorers", "scheduleId", "racersId", "racers", "racersMap", "scheduleName", "user"]),
     },
     async created() {
-        await this.loadPage();
+        if(this.scheduleName!==''){
+            await this.loadPage();
+        }
     },
     methods: {
         async loadPage(){

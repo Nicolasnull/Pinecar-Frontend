@@ -3,7 +3,7 @@
     <br>
     <ChooseName @change_name_event="loadPageData()" />
     <br>
-    <v-card v-if="rendered">
+    <v-card v-if="rendered && scheduleName!==''">
         <v-card v-for="(race, index) in Scorers.schedule" :key="index">
             <v-row>
                 <v-col>
@@ -64,7 +64,9 @@ export default {
         ...mapState(["scheduleId", "Scorers", "racersId", "racersMap","user", "scheduleName"]),
     },
     async created(){
-        this.loadPageData();
+        if(this.scheduleName!==""){
+            this.loadPageData();
+        }
     },
     methods: {
         async loadPageData(){
