@@ -93,8 +93,8 @@ import router from "../router";
 export default {
     name: "Login",
     data: ()=> ({
-      email: "admin@admin.com",
-      password: "I am admin",
+      email: "",
+      password: "",
       emailRule: [
       v => v !="" || "Email Required",
       ],
