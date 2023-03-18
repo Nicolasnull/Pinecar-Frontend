@@ -26,12 +26,6 @@ export default {
         }
     },
     async created(){
-        // don't load the schedule names until the user is defined
-        // this is only going to happen on refresh where user is undefined until 
-        // firebase auth authenticates
-        while(this.user===""){
-            await new Promise((res) => setTimeout(res, 50));
-        }
         await this.$store.dispatch("getAllScheduleNames");
         this.loaded=true;
     },

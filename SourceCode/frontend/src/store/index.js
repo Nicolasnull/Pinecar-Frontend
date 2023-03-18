@@ -3,15 +3,25 @@ import Vuex from "vuex";
 import {db, getScheduleRaces, auth} from "../firebase";
 import { collection, getDocs, getDoc, writeBatch, doc, query, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import VuexPersistence from "vuex-persist"
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+// save user in session storage
+const vuexSessionStorage = new VuexPersistence({
+  key: "store",
+  storage: window.sessionsStorage,
+  reducer: (state) =>({
+    user: state.user,
+    scheduleName: state.scheduleName,
+  })
+})
+
+const store = new Vuex.Store({
+  plugins:[vuexSessionStorage.plugin],
   state: {
     // User ID (this eventually needs to be made persistent via session storage)
     user: "",
-    racersId: "QoBZZcESsl3PAx18uiYG",
-    scheduleId: "KoLRW4tXu4t0pXgneD73",
     scheduleName: "",
     allScheduleNames: [],
 
@@ -28,7 +38,13 @@ export default new Vuex.Store({
       currentRaceScores: [],
     },
     ScoreBoard:{
-      scoreBoard:[]
+      scoreBoard:[],
+    },
+  },
+  getters:
+  {
+    isLoggedIn(state){
+      return state.user !== ""
     },
   },
   mutations: {
@@ -65,7 +81,6 @@ export default new Vuex.Store({
       state.scheduleName=name;
     },
   },
-  getters: {},
   actions: {
     async updateAllRacers({commit}, {userId, scheduleName, newRacerList, removedRacers}){
       // create batch to update racer if already in collection
@@ -94,7 +109,6 @@ export default new Vuex.Store({
       commit("doNothing");
     },
     async getAllRacers({commit}, {userId, scheduleName}){
-      console.log("HOWDY",userId,scheduleName)
       if(!scheduleName) return
       const query = await getDocs(collection(db, "Users", userId, "MasterSchedules", scheduleName, "Racers"));
       let allRacers = [];
@@ -120,7 +134,7 @@ export default new Vuex.Store({
       // Make sure all racers is up to date
       const myQuery = query(collection(db,"Users", userId, "MasterSchedules",scheduleName,"Racers"));
       let myScoreBoard=[];
-      onSnapshot(myQuery,(snapshot) =>
+      return onSnapshot(myQuery,(snapshot) =>
       {
         myScoreBoard= [];
         snapshot.forEach((doc) =>{
@@ -130,6 +144,7 @@ export default new Vuex.Store({
         commit("updateScoreBoard", { scoreBoard: sortedScoreBoard });
       });
     },
+
     async subscribeToUser({commit}){
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -154,3 +169,5 @@ export default new Vuex.Store({
     }
   },
 });
+
+export default store;

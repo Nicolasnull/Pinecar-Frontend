@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import router from "@/router/index.js";
 import { mapState } from "vuex";
 import ChooseName from "../components/ChooseName.vue";
 export default {
@@ -51,20 +50,24 @@ export default {
     computed: {
         ...mapState(["ScoreBoard", "racersId", "user", "scheduleName"])
     },
+    data: ()=>({
+    }),
     created() {
+      window.scrollTo(0, 0);
       if(this.scheduleName!==''){
         this.loadPageData();
       } 
     },
+    beforeDestroy(){
+      // remove subscription to scoreboard
+      this.unsubscribe();
+    },
     methods: {
         async loadPageData() {
-            window.scrollTo(0, 0);
-            await this.$store.dispatch("subscribeToScoreBoard", { userId: this.user, scheduleName: this.scheduleName });
-        },
-        toHome() {
-            router.push({
-                path: "/",
-            });
+          if(this.unsubscribe){
+            this.unsubscribe();
+          }
+            this.unsubscribe = await this.$store.dispatch("subscribeToScoreBoard", { userId: this.user, scheduleName: this.scheduleName });
         },
     },
     components: { ChooseName }
