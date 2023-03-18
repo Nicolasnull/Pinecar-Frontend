@@ -126,7 +126,10 @@ const store = new Vuex.Store({
       commit("doNothing");
     },
     async getAllRacers({commit}, {userId, scheduleName}){
-      if(!scheduleName) return
+      if(!scheduleName){
+        console.log("Get all racers was called with no schedule name");
+        return;
+      }
       const query = await getDocs(collection(db, "Users", userId, "MasterSchedules", scheduleName, "Racers"));
       let allRacers = [];
       let allRacersMap = new Map();

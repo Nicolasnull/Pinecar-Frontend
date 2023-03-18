@@ -217,15 +217,15 @@ export default {
       }
       if(this.scheduleType==="Update Existing Schedule"){
         await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.scheduleName, newRacerList:this.racers, removedRacers: this.removedRacers});
+        // this will make sure the new racers have their dbID updated and not left as undefined
+        await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
       }
       else if(this.newName!==""){
         await this.$store.dispatch("updateAllRacers",{userId: this.user, scheduleName: this.newName, newRacerList:this.racers, removedRacers: this.removedRacers});
         addScheduleName(this.user, this.newName, this.allScheduleNames);
+        // this will make sure the new racers have their dbID updated and not left as undefined
+        await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.newName});
       }
-      // this will make sure the new racers have their dbID updated and not left as undefined
-        await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
-
-      
     },
     async createSchedule(){
       await this.saveRacers()
@@ -238,7 +238,7 @@ export default {
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
       if(this.scheduleType==="Update Existing Schedule"){
-        console.log("ABout to replace schedule");
+        console.log("About to replace schedule");
         await replaceSchedule(this.user, this.scheduleName, scheduleObject.schedule)
         console.log("Out of replace schedule");
       }
@@ -247,6 +247,11 @@ export default {
         await replaceSchedule(this.user, this.newName, scheduleObject.schedule)
         addScheduleName(this.user, this.newName, this.allScheduleNames);
       }
+      this.sortRacersById();
+      if(this.newName!==""){
+        this.scheduleType="Update Existing Schedule";
+        this.$store.commit("updateScheduleName", {name: this.newName});
+      }
       // show stats?
     },
     nameChange(){
@@ -254,11 +259,12 @@ export default {
     },
     async loadScreenData(){
       if(this.scheduleType==="Create New") this.clearScreenData();
-      await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
+      else await this.$store.dispatch("getAllRacers",{userId: this.user, scheduleName: this.scheduleName});
       this.sortRacersById();
     },
     clearScreenData(){
       this.removedRacers=[];
+      this.newName="";
       this.$store.commit("updateScheduleName",{name: ""});
       this.$store.commit("updateRacers",{racersArr: [], racersMap: new Map()});
     },
