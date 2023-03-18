@@ -177,6 +177,7 @@ export async function logOut(){
     if(auth.user!==""){
         await signOut(auth);
     }
+    
 }
 
 export async function addScheduleName(userId, newName, namesArr){

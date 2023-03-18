@@ -48,6 +48,23 @@ const store = new Vuex.Store({
     },
   },
   mutations: {
+    lootStore(state){
+      state.user="";
+      state.scheduleName="",
+      state.allScheduleNames=[];
+      state.racers=[];
+      state.racersMap=new Map();
+      state.schedule=[];
+      state.Scorers ={
+        schedule:[],
+        currentRaceId:[],
+        currentRaceRacers:[],
+        currentRaceScores:[],
+      };
+      state.ScoreBoard={
+        scoreBoard:[],
+      }
+    },
     doNothing(){
       console.log("This needs to be cleaned up. Do nothing mutation in store...")
     },

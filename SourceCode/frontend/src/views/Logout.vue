@@ -10,6 +10,7 @@ export default {
     name:"Logout",
     async created(){
         await logOut();
+        this.$store.commit("lootStore");
         router.push({
             name:"Home",
         });
