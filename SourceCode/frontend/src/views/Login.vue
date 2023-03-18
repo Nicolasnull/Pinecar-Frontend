@@ -161,9 +161,9 @@ export default {
 
 <style>
 .login-card{
-  padding-left:25%;
-  padding-right:25%;
-  padding-top:15%;
+  padding-left:15%;
+  padding-right:15%;
+  padding-top:25px;
 }
 .form{
   padding:10%;
