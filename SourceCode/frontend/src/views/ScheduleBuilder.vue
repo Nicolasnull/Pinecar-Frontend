@@ -235,6 +235,14 @@ export default {
         alert("DUPLICATE IDS! Cannot submit racers until all racers have a unique racer number."); // TODO: VALIDATE BETTER
         return;
       }
+      if(racerIds.length < 4){
+        alert("Must have at least 4 racers to generate a schedule."); // TODO: VALIDATE BETTER
+        return;
+      }
+      if(this.scheduleName==="" && this.newName===""){
+        alert("Must select a schedule name");
+        return;
+      }
       let scheduleObject = generateSchedule(this.racers.length, this.numRaces, this.racers.map(racer => racer.dbId));
       console.log(scheduleObject);
       if(this.scheduleType==="Update Existing Schedule"){
