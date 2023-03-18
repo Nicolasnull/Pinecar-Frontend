@@ -60,7 +60,11 @@ export default {
     },
     beforeDestroy(){
       // remove subscription to scoreboard
-      this.unsubscribe();
+      if(this.unsubscribe){
+        this.unsubscribe();
+        console.log("Successfully unsubscribed from scoreboard on close")
+      }
+      
     },
     methods: {
         async loadPageData() {
