@@ -65,7 +65,7 @@
           </v-text-field>
           <v-text-field
             v-model="password"
-            :rules="passwordRule"
+            :rules="passwordRuleRegister"
             label="Password"
             type="password">
           </v-text-field>
@@ -100,6 +100,10 @@ export default {
       ],
       passwordRule: [
       v => v !="" || "Password Required",
+      ],
+      passwordRuleRegister: [
+      v => v !="" || "Password Required",
+      v => v.length >= 6 || "Passwords must be at least 6 characters long",
       ],
       valid: false,
       errorMessage: "",
