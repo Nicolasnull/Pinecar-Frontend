@@ -171,7 +171,7 @@ export async function forgotPasswordEmail(email){
 }
 
 export async function createUser(email,password){
-    return (await createUserWithEmailAndPassword(email, password)).user
+    return (await createUserWithEmailAndPassword(auth, email, password)).user
 }
 export async function logOut(){
     if(auth.user!==""){
