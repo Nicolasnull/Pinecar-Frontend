@@ -48,6 +48,12 @@
               <v-list-item-title>Dad's Screen</v-list-item-title>
             </v-list-item>
             <v-list-item
+              key="Schedule"
+              @click="toSchedule"
+            >
+              <v-list-item-title>Schedule</v-list-item-title>
+            </v-list-item>
+            <v-list-item
               key="Logout"
               @click="logout"
             >
