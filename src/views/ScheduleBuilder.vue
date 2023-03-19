@@ -159,6 +159,8 @@ import { mapState } from "vuex";
 import {generateSchedule} from "../scheduleGenAlgo/generateSchedule"
 import { replaceSchedule, addScheduleName } from "../firebase";
 import ChooseName from '../components/ChooseName.vue';
+import router from '../router';
+
 export default {
   name: "ScheduleBuilder",
   components: {
@@ -260,7 +262,7 @@ export default {
         this.scheduleType="Update Existing Schedule";
         this.$store.commit("updateScheduleName", {name: this.newName});
       }
-      // show stats?
+      this.toSchedule();
     },
     nameChange(){
       this.loadScreenData()
@@ -276,6 +278,11 @@ export default {
       this.$store.commit("updateScheduleName",{name: ""});
       this.$store.commit("updateRacers",{racersArr: [], racersMap: new Map()});
     },
+    toSchedule(){
+      router.push({
+        name: "Schedule",
+      })
+    }
   },
 };
 </script>
