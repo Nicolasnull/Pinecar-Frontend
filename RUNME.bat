@@ -1,2 +1,0 @@
-python SourceCode/cmd_line_entry.py
-pause
